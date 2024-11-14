@@ -8,7 +8,9 @@ from .forms import UserRegisterForm
 from .forms import LoginForm
 
 # Librerias
+from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.models import Session
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.models import User
 from django.shortcuts import render,redirect
 from django.shortcuts import redirect, get_object_or_404
@@ -553,25 +555,24 @@ def pagar_carrito(request):
 
     return render(request, 'Carrito.html', {'Mensaje': f"Compra realizada con éxito. Total: ${total}"})
 
+@login_required(login_url='login')
 def Dashboard(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
     return render(request, 'index-admin-dashboard.html')
 
+@login_required(login_url='login')
 def DashboardVentas(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
     total_productos = Articulos.objects.count()
     total_marcas = ArticuloMarca.objects.count()
     total_categorias = CategoriaCard.objects.count()
-    
-    # Obtener la cantidad total de stock disponible
     total_stock = sum(articulo.stock for articulo in Articulos.objects.all())
-
-    # Contar artículos por marca
     articulos_por_marca = Counter(articulo.marca for articulo in Articulos.objects.all())
     marcas = [marca.nombre for marca in ArticuloMarca.objects.all()]
     cantidades = [articulos_por_marca[marca] for marca in marcas]
-    
-    # Obtener la lista de artículos
     articulos = Articulos.objects.all()
-    # Obtener las ventas de los ultimos 7 dias
     hoy = datetime.now()
     hace_7_dias = hoy - timedelta(days=7)
     ventas = Ventas.objects.filter(fecha__range=[hace_7_dias, hoy]).order_by('-id')
@@ -583,26 +584,34 @@ def DashboardVentas(request):
         'total_stock': total_stock,
         'marcas': marcas,
         'cantidades': cantidades,
-        'articulos': articulos,  # Agregado
+        'articulos': articulos,
         'ventas': ventas,
     }
-    
     return render(request, 'index-admin-ventas.html', context)
 
+@login_required(login_url='login')
 def DashboardTickets(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
     tickets = SoporteTicket.objects.all()
     return render(request, 'index-admin-soporte.html', {'tickets': tickets})
 
+@login_required(login_url='login')
 def DashboardCrud(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
     articulos = Articulos.objects.all()
     marcas = ArticuloMarca.objects.all()
     cards = CategoriaCard.objects.all()
     return render(request, 'index-admin-crud.html', {'articulos': articulos, 'marcas': marcas, 'cards': cards})
 
+@login_required(login_url='login')
 def DashboardArticulos(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
     pagina = 1
     if request.GET.get('pagina', 1):
-        pagina = int( request.GET.get('pagina', 1) )
+        pagina = int(request.GET.get('pagina', 1))
 
     articulos_por_pagina = 15
     inicio = (pagina - 1) * articulos_por_pagina
@@ -610,60 +619,64 @@ def DashboardArticulos(request):
     articulos = Articulos.objects.all()[inicio:fin]
 
     cantidad_articulos = Articulos.objects.count()
-    cantidad_paginas = cantidad_articulos // articulos_por_pagina
     cantidad_paginas = (cantidad_articulos + articulos_por_pagina - 1) // articulos_por_pagina
     paginas = list(range(1, cantidad_paginas + 1))
 
     return render(request, 'index-admin-articulos.html', {'Articulos': articulos, 'Pagina': pagina, 'CantidadPaginas': paginas})
 
+@login_required(login_url='login')
 def DashboardMarcas(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
     pagina = 1
     if request.GET.get('pagina', 1):
-        pagina = int( request.GET.get('pagina', 1) )
+        pagina = int(request.GET.get('pagina', 1))
 
     marca_por_pagina = 15
     inicio = (pagina - 1) * marca_por_pagina
     fin = inicio + marca_por_pagina
     marca = ArticuloMarca.objects.all()[inicio:fin]
 
-    # Tambien enviar la cantidad de paginas
     cantidad_marcas = ArticuloMarca.objects.count()
-    cantidad_paginas = cantidad_marcas // marca_por_pagina
+    cantidad_paginas = (cantidad_marcas + marca_por_pagina - 1) // marca_por_pagina
 
     return render(request, 'index-admin-marcas.html', {'Marca': marca, 'Pagina': pagina, 'CantidadPaginas': cantidad_paginas})
 
+@login_required(login_url='login')
 def DashboardCards(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
     pagina = 1
     if request.GET.get('pagina', 1):
-        pagina = int( request.GET.get('pagina', 1) )
+        pagina = int(request.GET.get('pagina', 1))
 
     card_por_pagina = 15
     inicio = (pagina - 1) * card_por_pagina
     fin = inicio + card_por_pagina
     Card = CategoriaCard.objects.all()[inicio:fin]
 
-    # Tambien enviar la cantidad de paginas
     cantidad_card = CategoriaCard.objects.count()
-    cantidad_paginas = cantidad_card // card_por_pagina
+    cantidad_paginas = (cantidad_card + card_por_pagina - 1) // card_por_pagina
 
     return render(request, 'index-admin-categorias.html', {'cards': Card, 'Pagina': pagina, 'CantidadPaginas': cantidad_paginas})
 
+@login_required(login_url='login')
 def DashboardUsuario(request):
+    if not request.user.is_staff:
+        raise PermissionDenied
     pagina = 1
     if request.GET.get('pagina', 1):
-        pagina = int( request.GET.get('pagina', 1) )
+        pagina = int(request.GET.get('pagina', 1))
 
     usuario_por_pagina = 15
     inicio = (pagina - 1) * usuario_por_pagina
     fin = inicio + usuario_por_pagina
     Usuario = DatosUsuario.objects.all()[inicio:fin]
 
-    # Tambien enviar la cantidad de paginas
     cantidad_usuario = DatosUsuario.objects.count()
-    cantidad_paginas = cantidad_usuario // usuario_por_pagina
+    cantidad_paginas = (cantidad_usuario + usuario_por_pagina - 1) // usuario_por_pagina
 
     return render(request, 'index-admin-usuarios.html', {'datos_usuario': Usuario, 'Pagina': pagina, 'CantidadPaginas': cantidad_paginas})
-
 def buscar(request):
     query = request.GET.get('q')
 
