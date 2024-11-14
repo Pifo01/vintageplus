@@ -39,10 +39,10 @@ class SoporteTicket(models.Model):
     resuelto = models.BooleanField(default=False)
 
 class DatosUsuario(models.Model):
-    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)  # Opcional
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
     nombre = models.CharField(max_length=100, null=False) 
-    rut = models.IntegerField( default=12345678,null=False)
-    digito_verificador = models.CharField(default=1,max_length=1, null=False)
+    rut = models.IntegerField(unique=True, default=12345678, null=False)  # Agregado unique=True
+    digito_verificador = models.CharField(default=1, max_length=1, null=False)
     apellido_Paterno = models.CharField(max_length=100, null=False)
     apellido_Materno = models.CharField(max_length=100, null=False)
     correo = models.EmailField(null=False)
