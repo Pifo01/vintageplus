@@ -1,0 +1,87 @@
+{% extends "header.html" %}
+{% load static %}
+
+{% block customstyle %}
+    <style>
+        .card-img-wrapper {
+            height: 500px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-img-wrapper img {
+            object-fit: cover;
+            height: 100%;
+            width: 100%;
+            transition: transform 0.3s ease; 
+        }
+
+        
+        .card-img-overlay {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            color: white;
+            padding: 0;
+            display: flex;
+            align-items: end;
+            opacity: 1;
+            transition: opacity 0.3s ease;
+        }
+
+        .bg-gradient-dark {
+            background: rgba(0, 0, 0, 0.7);
+        }
+
+        /* Efecto Hover */
+        .card-img-wrapper:hover img {
+            transform: scale(1.05); 
+        }
+
+        
+        .card-img-wrapper::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(250, 250, 250, 0.2); 
+            opacity: 0;
+            transition: opacity 0.3s ease; 
+        }
+
+        .card-img-wrapper:hover::after {
+            opacity: 1; 
+        }
+
+        .card-img-wrapper:hover .card-img-overlay {
+            opacity: 0.8; 
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        {% for card in cards %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-200">
+                    <a href="/marcas/{{ card.marca.id }}" class="text-decoration-none text-white">
+                        <div class="card-img-wrapper position-relative">
+                            <img src="{{ card.imagen.url }}" class="card-img-top img-fluid" alt="{{ card.titulo }}">
+                            <div class="card-img-overlay d-flex align-items-end">
+                                <div class="bg-gradient-dark w-100 p-2 text-center">
+                                    <h5 class="m-0">{{ card.titulo }}</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

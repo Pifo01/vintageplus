@@ -1,0 +1,223 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=2.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+    <style>
+        .custom-sidebar {
+          height: calc(100vh);
+          width: 280px;
+          position: sticky;
+          top: 0;
+        }
+        
+        .custom-sidebar-dropdown {
+          position: relative;
+          bottom: 0;
+        }
+
+        .main-content {
+          width: calc(100% - 280px);
+          padding: 0;
+        }
+
+        .btn-custom {
+          width: 24px;
+          height: 16px;
+        }
+        
+    </style>
+    {% block customstyle %}
+    <style></style>
+    {% endblock %}
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark " data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          Vintage
+        </a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="/">INICIO</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/catalogo">CATALOGO</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/marcas">MARCAS</a>
+            </li>
+            {% if user.is_authenticated and user.is_superuser %}
+            <li class="ms-2 nav-item">
+              <a href="/dashboard/ventas/" class="btn btn-success">Admin</a>
+            </li>
+          {% endif %}
+          </ul>
+
+          <a href="/soporte" class="btn btn-success bi bi-question-circle me-2"></a>
+          <a href="/carrito" class="btn btn-success bi bi-cart me-2"></a>
+          <form class="d-flex me-2" role="search" action="/buscar" method="get">
+            <input class="form-control me-2" type="search" name="q" placeholder="Buscar" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Buscar</button>
+        </form>
+        
+    
+          {% if user.is_authenticated %}
+            <div class="dropdown">
+              <button class="btn btn-outline-success dropdown-toggle me-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ user.username }}
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/logout">Cerrar sesión</a></li>
+              </ul>
+            </div>
+          {% else %}
+            <a href="/login" class="btn btn-outline-success me-2">Iniciar Sesión</a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+    <div class="container-fluid">
+        <div class="row">
+          <div class="d-flex flex-column flex-shrink-0 p-3 text-bg-dark custom-sidebar">
+            <ul class="nav nav-pills flex-column mb-auto">
+              <!-- <a href="/dashboard/" class="nav-link active" aria-current="page"> -->
+              {% if request.path == '/dashboard/ventas/' %}
+                <a href="/dashboard/ventas/" class="nav-link active" aria-current="page">
+              {% else %}
+                <a href="/dashboard/ventas/" class="nav-link text-white">
+              {% endif %}
+                <i class="bi bi-house-fill me-1"></i>
+                Principal
+              </a>
+              
+              {% if request.path == '/dashboard/soporte/' %}
+                <a href="/dashboard/soporte/" class="nav-link active" aria-current="page">
+              {% else %}
+                <a href="/dashboard/soporte/" class="nav-link text-white">
+              {% endif %}
+                <i class="bi bi-chat-left-text-fill me-1"></i>
+                Tickets de soporte
+              </a>
+              <hr>
+              
+              {% if request.path == '/dashboard/articulos/' %}
+                <a href="/dashboard/articulos/" class="nav-link active" aria-current="page">
+              {% else %}
+                <a href="/dashboard/articulos/" class="nav-link text-white">
+              {% endif %}
+                <i class="bi bi-journal-text me-1"></i>
+                Articulos
+              </a>
+              
+              {% if request.path == '/dashboard/marcas/' %}
+                <a href="/dashboard/marcas/" class="nav-link active" aria-current="page">
+              {% else %}
+                <a href="/dashboard/marcas/" class="nav-link text-white">
+              {% endif %}
+                <i class="bi bi-tag-fill me-1"></i>
+                Marcas
+              </a>
+              
+              {% if request.path == '/dashboard/categoria/' %}
+                <a href="/dashboard/categoria/" class="nav-link active" aria-current="page">
+              {% else %}
+                <a href="/dashboard/categoria/" class="nav-link text-white">
+              {% endif %}
+                <i class="bi bi-tag-fill me-1"></i>
+                Categorias
+              </a>
+              
+              {% if request.path == '/dashboard/usuarios/' %}
+                <a href="/dashboard/usuarios/" class="nav-link active" aria-current="page">
+              {% else %}
+                <a href="/dashboard/usuarios/" class="nav-link text-white">
+              {% endif %}
+                <i class="bi bi-people-fill me-1"></i>
+                Usuarios
+              </a>
+              <hr>
+
+              <!-- Registrar recibo de mercaderia -->
+              {% if request.path == '/dashboard/mercaderias/' %}
+                <a href="/dashboard/mercaderias/" class="nav-link active" aria-current="page">
+              {% else %}
+                <a href="/dashboard/mercaderias/" class="nav-link text-white">
+              {% endif %}
+                <i class="bi bi-journal-text me-1"></i>
+                Recibo de mercaderia
+              </a>
+
+              <hr>
+              <div class="nav-link dropdown custom-sidebar-dropdown" style="cursor: pointer;">
+                <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-person-circle me-2"></i>
+                  {{ user.username|capfirst }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                  <li><a class="dropdown-item" href="#">Configuración</a></li>
+                  <li><a class="dropdown-item" href="#">Perfil</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="/logout">Cerrar Sesion</a></li>
+                </ul>
+              </div>
+
+              <a href="/logout" class="nav-link text-white">
+                <i class="bi bi-box-arrow-right me-1"></i>
+                Cerrar sesión
+              </a>
+            </ul>
+          </div>
+      
+          <main class="main-content p-4">
+            {% block content %}
+            {% endblock %}
+          </main>
+        </div>
+      </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  {% block customjs %}
+  <script></script>
+  {% endblock %}
+
+  <!-- Modal in case of message -->
+  {% if Mensaje %}
+  <div class="modal" tabindex="-1" id="mensaje-aviso">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Aviso</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>{{Mensaje}}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="mensaje-aviso-cerrar">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var myModal = new bootstrap.Modal(document.getElementById('mensaje-aviso'))
+    myModal.show()
+  </script>
+  {% endif %}
+
+  {% if Redireccionar %}
+  <script>
+    var botonCerrar = document.getElementById('mensaje-aviso-cerrar')
+    botonCerrar.addEventListener('click', function() {
+      window.location.href = '{{Redireccionar}}'
+    })
+  </script>
+  {% endif %}
+  </body>
+</html>

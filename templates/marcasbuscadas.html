@@ -1,0 +1,112 @@
+{% extends "header.html" %}
+{% load static %}
+
+{% block customstyle %}
+    <style>
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        .card-body {
+            font-size: 0.9rem;
+        }
+        .btn-outline-primary {
+            border: 2px solid #007bff;
+            color: #007bff;
+        }
+        .btn-outline-primary:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+        
+        /* Ajustes del modal */
+        .modal-body .table-borderless td {
+            padding-top: 0.2rem;
+            padding-bottom: 0.2rem;
+            font-size: 0.95rem;
+        }
+        .modal-body .table-borderless .text-muted {
+            color: #6c757d;
+            font-weight: 500;
+        }
+        
+        /* Ajustar espaciado alrededor de la imagen */
+        .modal-body img {
+            margin-bottom: 0.8rem;
+            border-radius: 5px;
+        }
+
+        
+    </style>
+{% endblock %}
+
+{% block content %}
+  <div class="container my-5">
+    {% if Marca %}
+      <h2 class="text-center text-white bg-dark p-3 rounded">{{ Marca.nombre }}</h2>
+    {% endif %}
+    
+    <a href="/marcas" class="btn btn-primary mb-4">Regresar</a>
+    
+    <div class="row gy-4">
+        {% if Articulo %}
+            {% for ar in Articulo %}
+                <div class="col-6 col-md-3">
+                    <div class="card shadow-sm h-100 border-0">
+                        <img src="{{ ar.imagen.url }}" class="card-img-top rounded-top" alt="{{ ar.nombre }}" style="height: 200px; object-fit: cover;">
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-bold">{{ ar.nombre }}</h5>
+                            <p class="card-text">Precio: ${{ ar.precio }}</p>
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#detalleModal{{ ar.id }}">
+                                Ver detalles
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de Detalles -->
+                <div class="modal fade" id="detalleModal{{ ar.id }}" tabindex="-1" aria-labelledby="detalleModalLabel{{ ar.id }}" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header bg-dark text-white">
+                                <h5 class="modal-title" id="detalleModalLabel{{ ar.id }}">{{ ar.nombre }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <img src="{{ ar.imagen.url }}" class="img-fluid rounded mb-3" alt="{{ ar.nombre }}">
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr><td><strong>Precio:   </strong> ${{ ar.precio }}</td></tr>
+                                        <tr><td><strong>Descripción:   </strong> {{ ar.descripcion }}</td></tr>
+                                        <tr><td><strong>Stock disponible:   </strong> {{ ar.stock }}</td></tr>
+                                        <tr><td><strong>Marca:   </strong>{{ar.marca.nombre}}</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer d-flex justify-content-between">
+                                <a href="/dashboard/articulos/ver/{{ ar.id }}" class="btn btn-success">Ver en página completa</a>
+                                {% if user.is_authenticated and user.is_superuser %}
+                                    <a href="/dashboard/articulos/actualizar/{{ ar.id }}" class="btn btn-warning">Editar</a>
+                                    <a href="/dashboard/articulos/borrar/{{ ar.id }}" class="btn btn-danger">Eliminar</a>
+                                {% endif %}
+                                <a href="/agregar-al-carrito/{{ ar.id }}" class="btn btn-primary">Comprar</a>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info text-center">No hay artículos disponibles.</div>
+        {% endif %}
+    </div>
+  </div>
+{% endblock %}
+

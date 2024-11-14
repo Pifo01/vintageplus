@@ -1,0 +1,27 @@
+{% include 'header.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-5">
+    <div class="container text-bg-light text-center display-4 py-4 mb-5 rounded-top border-bottom">Marca {{Marca.empresa}}</div>
+    <table class="table table-striped">
+        <tr>
+            <td>ID</td>
+            <td>{{Marca.id}}</td>
+        </tr>
+        <tr>
+            <td>Nombre</td>
+            <td>{{Marca.nombre}}</td>
+        </tr>
+        <tr>
+            <td>Empresa</td>
+            <td>{{Marca.empresa}}</td>
+        </tr>
+        <tr>
+            <td>Linea</td>
+            <td>{{Marca.linea|capfirst}}</td>
+        </tr>
+    </table>
+    <a href="/dashboard/marcas/" class="btn btn-success">Volver</a>
+    <div style="height: 100px;"></div>
+</div>
+{% endblock %}

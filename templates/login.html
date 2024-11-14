@@ -1,0 +1,40 @@
+{% extends "header.html" %}
+{% block content %}
+<section class="vh-100" style="background-color: #508bfc;">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+          <div class="card shadow-2-strong" style="border-radius: 1rem;">
+            <div class="card-body p-5 text-center">
+  
+              <form method="POST">
+                <h3 class="mb-5">Inicia sesion</h3>
+                {{form.as_p}}
+                {%csrf_token %}
+
+                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
+              </form>
+
+              <div class="mt-3">
+                <p>¿No tienes una cuenta?</p>
+                <a href="/register" class="btn btn-link">¿Quieres crear una cuenta?</a>
+              </div>
+            </div>
+
+              <div class="toast bottom-0 end-0" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="d-flex">
+                  <div class="toast-body">
+                    Hello, world! This is a toast message.
+                  </div>
+                  <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+              </div>
+  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

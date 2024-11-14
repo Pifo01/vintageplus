@@ -1,0 +1,101 @@
+{% extends "header-admin.html" %}
+
+{% block content %}
+    <!-- Paginacion -->
+    <nav class="d-flex justify-content-center">
+        <ul class="pagination">
+            {% for pag in CantidadPaginas %}
+                <li class="page-item"><a class="page-link" href="/dashboard/articulos?pagina={{pag}}">{{pag}}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+    <div class="container text-bg-light text-center pt-3 pb-3 rounded-top border-bottom">
+        <div class="row">
+            <div class="col">
+            </div>
+            <div class="col">
+                <p class="fs-2 m-0">Sección de Artículos</p>
+            </div>
+            <div class="col text-end align-self-center">
+                <a href="/dashboard/articulos/crear/" class="btn btn-outline-success">
+                    <i class="bi bi-plus-lg"></i> Agregar Artículo
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Tabla -->
+    <table class="table table-striped table-hover align-middle rounded-bottom">
+        <thead>
+            <tr>
+                <th class="text-center">ID</th>
+                <th class="text-center">Imagen</th>
+                <th class="text-center">Nombre</th>
+                <th class="text-center">Precio</th>
+                <th class="text-center">Descripción</th>
+                <th class="text-center">Stock</th>
+                <th class="text-center">Color</th>
+                <th class="text-center">Género</th>
+                <th class="text-center">Talla</th>
+                <th class="text-center">Tipo</th>
+                <th class="text-center">Marca</th>
+                <th colspan="3">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ar in Articulos %}
+            <tr>
+                <td>{{ar.id}}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-primary btn-sm p-2" data-bs-toggle="modal" data-bs-target="#modalimg-{{ar.id}}">
+                        <i class="bi bi-image"></i>
+                    </button>
+                </td>
+                <td>{{ar.nombre|capfirst}}</td>
+                <td>${{ar.precio}}</td>
+                <td>{{ar.descripcion|truncatechars:24}}</td>
+                <td>{{ar.stock}}</td>
+                <td>{{ar.color|capfirst}}</td>
+                <td>{{ar.genero|capfirst}}</td>
+                <td>{{ar.talla}}</td>
+                <td>{{ar.tipo|capfirst}}</td>
+                <td>{{ar.marca}}</td>
+                <td>
+                    <a href="/dashboard/articulos/ver/{{ar.id}}" class='btn btn-success btn-sm p-2'>
+                        <i class="bi bi-eye"></i>
+                    </a>
+                    <a href="/dashboard/articulos/actualizar/{{ar.id}}" class='btn btn-warning btn-sm p-2'>
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <a href="/dashboard/articulos/borrar/{{ar.id}}" class='btn btn-danger btn-sm p-2'>
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </td>
+            </tr>
+
+            <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modalimg-{{ar.id}}">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body mx-auto">
+                        <img src="{{ar.imagen.url}}" class="img-fluid" alt="">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+            {%endfor%}
+        </tbody>
+    </table>
+    <nav class="d-flex justify-content-center">
+        <ul class="pagination">
+            {% for pag in CantidadPaginas %}
+                <li class="page-item"><a class="page-link" href="/dashboard/articulos?pagina={{pag}}">{{pag}}</a></li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endblock %}

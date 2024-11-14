@@ -1,0 +1,52 @@
+{% extends "header.html" %}
+
+{% block customstyle %}
+<style>
+    /* Estilos para quitar las esquinas redondeadas de los botones y las celdas */
+    .btn-no-curvas {
+        border-radius: 0; /* Quitar las esquinas redondeadas */
+    }
+
+    .table td, .table th {
+        border-radius: 0; /* Quitar las esquinas redondeadas en la tabla */
+    }
+
+    .table-dark {
+        border: 1px solid #343a40; /* Agregar un borde oscuro a la tabla */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Título del ticket en fondo oscuro y texto blanco -->
+    <div class="alert bg-dark text-white display-1">Ticket De {{ Ticket.nombre }}</div>
+    
+    <!-- Tabla con tema oscuro para mantener coherencia -->
+    <table class="table table-dark table-bordered">
+        <tr><td><strong>ID</strong></td><td>{{ Ticket.id }}</td></tr>
+        <tr><td><strong>Fecha</strong></td><td>{{ Ticket.fecha }}</td></tr>
+        <tr><td><strong>Nombre</strong></td><td>{{ Ticket.nombre }}</td></tr>
+        <tr><td><strong>Correo</strong></td><td>{{ Ticket.correo }}</td></tr>
+        <tr><td><strong>Mensaje</strong></td><td>{{ Ticket.mensaje }}</td></tr>
+        <tr><td><strong>Estado</strong></td>
+            <td>
+                {% if Ticket.resuelto %}
+                    Resuelto
+                {% else %}
+                    Pendiente
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+    
+    <!-- Botón con estilo de header y sin curvas -->
+    <a href="/dashboard/soporte/" class="btn btn-outline-success btn-no-curvas bi bi-arrow-left"> Volver</a>
+
+    <form action="/true-ticket/{{ Ticket.id }}" method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-success btn-no-curvas">Marcar como Resuelto</button>
+    </form>
+</div>
+{% endblock %}
+

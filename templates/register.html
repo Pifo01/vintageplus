@@ -1,0 +1,19 @@
+{% extends "header.html" %}
+{% block customstyle %}
+  <style>
+    .container {
+      max-width: 500px;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2>Crear una cuenta</h2>
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary mb-5">Registrarse</button>
+    </form>
+  </div>
+{% endblock %}

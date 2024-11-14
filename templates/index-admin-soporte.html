@@ -1,0 +1,39 @@
+{% extends "header-admin.html" %}
+
+{% block content %}
+<div class="container text-center p-3 rounded-top border-bottom">
+  <div class="row">
+    <div class="col">
+      <p class="fs-2 m-0">Tickets de soporte</p>
+    </div>
+  </div>
+</div>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Fecha</th>
+      <th scope="col">Persona</th>
+      <th scope="col">Correo</th>
+      <th scope="col">Mensaje</th>
+      <th scope="col">Estado</th>
+      <th scope="col">Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ticket in tickets %}
+    <tr>
+      <th scope="row">{{ ticket.id }}</th>
+      <td>{{ ticket.fecha }}</td>
+      <td>{{ ticket.nombre }}</td>
+      <td>{{ ticket.correo }}</td>
+      <td>{{ ticket.mensaje }}</td>
+      <td>{% if ticket.resuelto == True %} Resuelto {% else %} Pendiente {% endif %}</td>
+      <td>
+        <a href="/view-ticket/{{ ticket.id }}" class="btn btn-primary">Ver</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "header-admin.html" %}
+
+
+{% block customstyle %}
+<style>
+    .mercaderia-selector {
+        max-width: 300px;
+    }
+
+    #mercaderia-plantilla {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<div class="container"></div>
+    <div id="form-container"></div>
+    <h2>Recibo de Mercaderías</h2>
+    <div class="mercaderia-container">
+        <!-- Aqui iran las mercaderias -->
+    </div>
+
+    <div class="row mt-4 mb-4">
+        <div class="col-2 mercaderia-selector">
+            <!-- Selector para usar un articulo existente como plantilla -->
+            <div class="mb-3">
+                <select class="form-select" id="mercaderia-articulo-plantilla" name="articulo">
+                    <option value="0">Seleccionar articulo</option>
+                    {% for articulo in Articulo %}
+                        <option value="{{ articulo.id }}">[{{ articulo.id }}] {{ articulo.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-3">
+            <button id="add-mercaderia-btn" class="btn btn-primary">Añadir mercadería</button>
+        </div>
+        <div class="col-5">
+            <button id="guardar-mercaderia-btn" class="btn btn-primary">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Plantilla para añadir mercadería -->
+<div id="mercaderia-plantilla" class="card p-3 mt-4">
+    <div class="mb-3 col">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="mercaderia-nombre" name="nombre" disabled>
+    </div>
+    <div class="mb-3 row">
+        <div class="col">
+            <label for="cantidad" class="form-label">Cantidad recibida</label>
+            <input type="number" class="form-control" id="mercaderia-cantidad" name="cantidad" required>
+        </div>
+        <div class="col">
+            <label for="unidad" class="form-label">Actualmente hay</label>
+            <input type="text" class="form-control" id="mercaderia-cantidad-actual" name="unidad" disabled>
+        </div>
+    </div>
+    <div class="mb-3 col">
+        <label for="precio" class="form-label">Precio</label>
+        <input type="number" class="form-control" id="mercaderia-precio" name="precio" disabled>
+    </div>
+    <!-- Boton para quitar la mercaderia actual -->
+    <button class="btn btn-danger">Quitar</button>
+</div>
+
+{% endblock %}
+
+{% block customjs %}
+<script>
+    let articulos = {};
+
+    // Añadir articulos al objeto articulos
+    {% for articulo in Articulo %}
+        articulos[{{ articulo.id }}] = { nombre: '{{ articulo.nombre }}', precio: {{ articulo.precio }}, cantidad: {{ articulo.stock }} };
+    {% endfor %}
+
+    const mercaderiaArticuloPlantilla = document.getElementById('mercaderia-articulo-plantilla');
+    mercaderiaArticuloPlantilla.addEventListener('change', () => {
+        const articuloId = mercaderiaArticuloPlantilla.value;
+        if (articuloId == 0) return;
+    });
+
+    const mercaderiaPlantilla = document.getElementById('mercaderia-plantilla');
+    const mercaderiaContainer = document.querySelector('.mercaderia-container');
+    const addMercaderiaBtn = document.getElementById('add-mercaderia-btn');
+
+    let mercaderiasRecibidas = [];
+
+    addMercaderiaBtn.addEventListener('click', () => {
+        // Si no se selecciona un articulo, no hacer nada
+        const selectedArticuloId = mercaderiaArticuloPlantilla.value;
+        if (selectedArticuloId == 0) {
+            return;
+        }
+
+        // Si ya se ha añadido este articulo, no hacer nada
+        if (mercaderiasRecibidas.find(mercaderia => mercaderia.id == selectedArticuloId)) {
+            alert('Ya se ha añadido este articulo');
+            return;
+        }
+
+        const mercaderia = mercaderiaPlantilla.cloneNode(true);
+        mercaderia.style.display = 'block';
+        mercaderiaContainer.appendChild(mercaderia);
+
+        const selectedArticulo = articulos[selectedArticuloId];
+        mercaderia.querySelector('#mercaderia-nombre').value = selectedArticulo.nombre;
+        mercaderia.querySelector('#mercaderia-cantidad').value = 0;
+        mercaderia.querySelector('#mercaderia-cantidad-actual').value = selectedArticulo.cantidad;
+        mercaderia.querySelector('#mercaderia-precio').value = selectedArticulo.precio;
+
+        // Añadir evento para quitar la mercaderia
+        mercaderia.querySelector('button').addEventListener('click', () => {
+            mercaderia.remove();
+            mercaderiasRecibidas = mercaderiasRecibidas.filter(mercaderia => mercaderia.id != selectedArticuloId);
+        });
+
+        // Añadir evento para actualizar la cantidad
+        mercaderia.querySelector('#mercaderia-cantidad').addEventListener('change', () => {
+            const cantidad = mercaderia.querySelector('#mercaderia-cantidad').value;
+            mercaderiasRecibidas.find(mercaderia => mercaderia.id == selectedArticuloId).cantidad = cantidad;
+        });
+
+        // Restablecer el valor del select
+        mercaderiaArticuloPlantilla.value = 0;
+
+        // Agregar mercaderia a la lista
+        mercaderiasRecibidas.push({
+            id: selectedArticuloId,
+            cantidad: 0
+        });
+    });
+
+    const guardarMercaderiaBtn = document.getElementById('guardar-mercaderia-btn');
+
+    guardarMercaderiaBtn.addEventListener('click', () => {
+        // Si no hay ningun articulo añadido, no hacer nada
+        if (mercaderiasRecibidas.length === 0) {
+            alert('No hay ningun articulo añadido');
+            return;
+        }
+
+        // Enviar la informacion al servidor
+        fetch('/dashboard/mercaderias/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify(mercaderiasRecibidas)
+        }).then(response => {
+            window.location.reload();
+        });
+    });
+</script> 
+{% endblock %}

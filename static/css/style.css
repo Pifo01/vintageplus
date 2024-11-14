@@ -1,0 +1,206 @@
+
+h1{
+    color:azure;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+iframe {
+    width: 480px;
+    height: 344px;
+}
+
+.container-fluid {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+.carousel-inner img {
+    width: 100%;
+    height: auto; /* Ajustar la altura automáticamente */
+}
+
+.carousel {
+    max-width: 100vw; /* Asegura que ocupe todo el viewport */
+}
+
+.Texto_Historia{
+    padding-left: 50%;
+}
+
+.carousel-caption-color{
+    color:black;
+}
+
+.bg-success {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-success-rgb), var(--bs-bg-opacity)) !important;
+  }
+
+.container_comoJugar{
+    height: 20px;
+
+    padding-left: 50%;
+
+    
+}
+.texto-shadow {
+    font-size: 50px;
+    color: white;
+    text-shadow: 
+        2px 2px 0px black, 
+        -2px 2px 0px black, 
+        2px -2px 0px black, 
+        -2px -2px 0px black; 
+}
+
+.texto-con-sombra {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.texto-con-borde {
+
+    color: white; 
+    text-shadow:
+    -1px -1px 0 #000,  
+    1px -1px 0 #000,
+    -1px  1px 0 #000,
+    1px  1px 0 #000; 
+}
+
+.bi {
+    display: inline-block;
+    width: 1rem;
+    height: 1rem;
+  }
+  
+  /*
+   * Sidebar
+   */
+  
+  @media (min-width: 768px) {
+    .sidebar .offcanvas-lg {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 48px;
+    }
+    .navbar-search {
+      display: block;
+    }
+  }
+  
+  .sidebar .nav-link {
+    font-size: .875rem;
+    font-weight: 500;
+  }
+  
+  .sidebar .nav-link.active {
+    color: #2470dc;
+  }
+  
+  .sidebar-heading {
+    font-size: .75rem;
+  }
+  
+  /*
+   * Navbar
+   */
+  
+  .navbar-brand {
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+    background-color: rgba(0, 0, 0, .25);
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .25);
+  }
+  
+  .navbar .form-control {
+    padding: .75rem 1rem;
+  }
+
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.stat {
+    background: #e9ecef;
+    padding: 20px;
+    border-radius: 5px;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.stat:last-child {
+    margin-right: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background: white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.stat {
+    background: #e9ecef;
+    padding: 20px;
+    border-radius: 5px;
+    flex: 1;
+    margin-right: 10px;
+}
+
+.stat:last-child {
+    margin-right: 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+  

@@ -1,0 +1,20 @@
+{% extends "header.html" %}
+{% block content %}
+<div class="container mt-5">
+        <div class="alert alert-success display-1">Articulo {{Articulo.nombre}}</div>
+        <table class="table table-striped">
+            <tr><td>ID</td><td>{{Articulo.id}}</td></tr>
+            <tr><td>Imagen Url</td><td>{{Articulo.imagen.url}}</td></tr>
+            <tr><td>Nombre</td><td>{{Articulo.nombre}}</td></tr>
+            <tr><td>Precio</td><td>{{Articulo.precio}}</td></tr>
+            <tr><td>Descripcion</td><td>{{Articulo.descripcion}}</td></tr>
+            <tr><td>Stock</td><td>{{Articulo.stock}}</td></tr>
+            <tr><td>Marcas</td><td>{{Articulo.marca.nombre}}</td></tr>
+            <tr><td>Color</td><td>{{Articulo.color.nombre}}</td></tr>
+            <tr><td>Genero</td><td>{{Articulo.genero.nombre}}</td></tr>
+            <tr><td>Talla</td><td>{{Articulo.talla.numero}}</td></tr>
+            <tr><td>Tipo de zapatilla</td><td>{{Articulo.tipo.nombre}}</td></tr>
+        </table>
+        <a href="/index-usuario/" class="btn btn-success">Volver</a>
+    </div>
+{% endblock %}

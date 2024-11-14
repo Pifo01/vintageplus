@@ -1,0 +1,25 @@
+{% extends "header.html" %}
+{% load static %}
+
+{% block content %}
+    {% if resultados_articulos %}
+        <h1 class="text-center mt-5">Resultados de la búsqueda</h1>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-4 ms-4 me-4">
+            {% for articulo in resultados_articulos %}
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="{{ articulo.imagen.url }}" class="card-img-top" alt="{{ articulo.nombre }}" style="height: 150px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ articulo.nombre }}</h5>
+                            <p class="card-text">{{ articulo.descripcion }}</p>
+                            <!-- Boto de compra-->
+                            <a href="/dashboard/articulos/ver/{{ articulo.id }}" class="btn btn-primary">Ver más</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <h1 class="text-center mt-5">No se encontraron resultados</h1>
+    {% endif %}
+{% endblock %}

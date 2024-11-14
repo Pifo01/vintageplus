@@ -1,0 +1,328 @@
+{% extends "header.html" %}
+
+{% block customstyle %}
+<style>/* Estilos para el modal */
+    .modal-content {
+        border-radius: 8px; /* Bordes redondeados */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra sutil */
+    }
+    
+    /* Estilos para el encabezado del modal */
+    .modal-header {
+        background-color: #343a40;
+        color: #ffffff;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }
+    
+    /* Botón de cierre en el encabezado */
+    .btn-close-white {
+        filter: brightness(0) invert(1);
+    }
+    
+    /* Estilos para el formulario */
+    .modal-body form {
+        font-size: 1rem;
+    }
+    
+    /* Estilo del botón de confirmación */
+    .modal-body .btn-primary {
+        background-color: #28a745;
+        border: none;
+        font-size: 1.1rem;
+        padding: 10px 20px;
+        transition: background-color 0.3s;
+    }
+    
+    .modal-body .btn-primary:hover {
+        background-color: #218838;
+    }
+    
+    /* Estilos para los campos del formulario */
+    .modal-body .form-control {
+        border-radius: 4px;
+        border: 1px solid #ced4da;
+    }
+    
+    .modal-body .form-control:focus {
+        box-shadow: 0 0 5px rgba(40, 167, 69, 0.3); /* Resalta en verde al hacer foco */
+        border-color: #28a745;
+    }</style>
+{% endblock %}
+{% block content %}
+<section class="h-100 gradient-custom">
+    <div class="container py-5">
+        <div class="row d-flex justify-content-center my-4">
+            <div class="col-md-8">
+                <div class="card mb-4">
+                    <div class="card-header py-3">
+                        <h5 class="mb-0">Carrito - {{ Articulo|length }} artículos</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Repetir para cada artículo en el carrito -->
+                        {% for articulo in Articulo %}
+                        <div class="row">
+                            <div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
+                                <!-- Imagen del artículo -->
+                                <div class="bg-image hover-overlay hover-zoom ripple rounded"
+                                    data-mdb-ripple-color="light">
+                                    <img src="{{ articulo.imagen.url }}" class="w-100" alt="{{ articulo.nombre }}" />
+                                </div>
+                            </div>
+
+                            <div class="col-lg-5 col-md-6 mb-4 mb-lg-0">
+                                <!-- Datos del artículo -->
+                                <p><strong>{{ articulo.nombre }}</strong></p>
+                                <p>Color: {{ articulo.color.nombre }}</p>
+                                <p>Talla: {{ articulo.talla.numero }}</p>
+                                <form method="post" action="{% url 'quitar_del_carrito' articulo.id %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary btn-sm me-1 mb-2"
+                                        title="Quitar del carrito">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm mb-2"
+                                        title="Mover a lista de deseos">
+                                        <i class="bi bi-heart"></i>
+                                    </button>
+                                </form>
+                            </div>
+
+                            <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                                <!-- Cantidad -->
+                                <div class="d-flex mb-4" style="max-width: 300px">
+                                    <button class="btn btn-primary px-3 me-2" id="restar-{{articulo.id}}">
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <input id="cantidad-{{articulo.id}}" min="0" name="cantidad" value="1" type="number"
+                                        class="form-control text-center" style="max-width: 100px"
+                                        data-precio="{{articulo.precio}}" />
+                                    <button class="btn btn-primary px-3 ms-2" id="sumar-{{articulo.id}}">
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+
+                                <!-- Precio -->
+                                <p class="text-start text-md-center">
+                                    <strong id="precio-{{articulo.id}}">${{ articulo.precio }}</strong>
+                                </p>
+                            </div>
+                        </div>
+                        <hr class="my-4" />
+                        {%empty%}
+                        <div class="alert alert-info">¿No hay articulos en el carrito?</div>
+                        <a href="/catalogo/" class="btn btn-success">Ir a catalogo</a>
+                        {% endfor %}
+
+                    </div>
+
+                    <!-- Establecer la cantidad de cada articulo -->
+                    {% for id, cantidad in Carrito.items %}
+                    <script>
+                        document.getElementById('cantidad-{{ id }}').value = {{ cantidad }};
+                        document.getElementById('precio-{{ id }}').innerText = '$' + ({{ cantidad }} * parseFloat(document.getElementById('cantidad-{{ id }}').getAttribute('data-precio')));
+                    </script>
+                    {% endfor %}
+
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header py-3">
+                        <h5 class="mb-0">Resumen</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Productos
+                                <span id="subtotal">${{ total }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Envío
+                                <span>Gratis</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <strong>Total</strong>
+                                    <p class="mb-0">(incluye IVA)</p>
+                                </div>
+                                <span id="total"><strong>${{ total }}</strong></span>
+                            </li>
+                        </ul>
+                        <!-- Botón de Pago en Resumen -->
+                        <button type="button" class="btn btn-primary btn-lg btn-block" data-bs-toggle="modal" data-bs-target="#modalConfirmacion">
+                            Ir a pagar
+                        </button>
+                        
+                        
+                        {% if user.is_authenticated %}
+                        <!-- Modal de Confirmación -->
+                        <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalLabelConfirmacion" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalLabelConfirmacion">Confirmar compra</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        ¿Está seguro de que desea realizar esta compra?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                        <button type="button" class="btn btn-primary" id="boton-pagar">Confirmar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% else %}
+                        <!-- Modal de Datos de Compra -->
+                        <div class="modal fade" id="modalConfirmacion" tabindex="-1" aria-labelledby="modalConfirmacionLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"> <!-- Centrar y agrandar el modal -->
+                                <div class="modal-content">
+                                    <!-- Encabezado del Modal -->
+                                    <div class="modal-header bg-dark text-white">
+                                        <h5 class="modal-title" id="modalConfirmacionLabel">Completa tus datos para continuar</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                        
+                                    <!-- Cuerpo del Modal -->
+                                    <div class="modal-body">
+                                        <form method="post" action="/carrito/pagar/" class="p-3">
+                                            {% csrf_token %}
+                                            <div class="mb-3">
+                                                {{ form_datos_compra.as_p }}
+                                            </div>
+                                            <script>
+                                                let crearcuenta = document.getElementById('id_crear_usuario');
+                                                let username = document.getElementById('id_username');
+                                                let password = document.getElementById('id_password');
+                                                crearcuenta.addEventListener('change', function() {
+                                                    if (crearcuenta.checked) {
+                                                        username.disabled = false;
+                                                        password.disabled = false;
+                                                    } else {
+                                                        username.disabled = true;
+                                                        password.disabled = true;
+                                                    }
+                                                });
+                                            </script>
+                                            <button type="submit" class="btn btn-primary w-100">Confirmar Compra</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %} 
+                        
+                    </div>
+                </div>
+                <!-- Limpiar carrito -->
+                <div class="card-body">
+                    <form method="post" action="/carrito/limpiar/">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-lg btn-block">
+                            Limpiar carrito
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    function actualizarTotal() {
+        let total = 0;
+        {% for articulo in Articulo %}
+        let cantidad{{ articulo.id }} = parseInt(document.getElementById('cantidad-{{articulo.id}}').value);
+        let precio{{ articulo.id }} = parseFloat(document.getElementById('cantidad-{{articulo.id}}').getAttribute('data-precio'));
+        total += cantidad{{ articulo.id }} * precio{{ articulo.id }};
+        {% endfor %}
+        document.getElementById('subtotal').innerText = '$' + total;
+        document.getElementById('total').innerText = '$' + total;
+    }
+
+    function sumarArticulo(articulo_id) {
+        fetch('/carrito/sumar/' + articulo_id + '', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({}),
+        }).then(response => {
+            if (response.status == 200) {
+                let cantidad = parseInt(document.getElementById('cantidad-' + articulo_id).value);
+                document.getElementById('cantidad-' + articulo_id).value = cantidad + 1;
+                document.getElementById('precio-' + articulo_id).innerText = '$' + ((cantidad + 1) * parseFloat(document.getElementById('cantidad-' + articulo_id).getAttribute('data-precio')));
+                actualizarTotal();
+            } else {
+                throw new Error('No se pudo sumar el artículo al carrito');
+            }
+        })
+    }
+
+    function restarArticulo(articulo_id) {
+        let cantidad = parseInt(document.getElementById('cantidad-' + articulo_id).value);
+        if (cantidad > 1) {
+            fetch('/carrito/restar/' + articulo_id + '', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify({}),
+            }).then(response => {
+                if (response.status == 200) {
+                    document.getElementById('cantidad-' + articulo_id).value = cantidad - 1;
+                    document.getElementById('precio-' + articulo_id).innerText = '$' + ((cantidad - 1) * parseFloat(document.getElementById('cantidad-' + articulo_id).getAttribute('data-precio')));
+                    actualizarTotal();
+                } else {
+                    throw new Error('No se pudo restar el artículo del carrito');
+                }
+            })
+        }
+    }
+
+    function alEscribirCantidad(articulo_id) {
+        let cantidad = parseInt(document.getElementById('cantidad-' + articulo_id).value);
+        if (cantidad < 1) {
+            document.getElementById('cantidad-' + articulo_id).value = 1;
+            cantidad = 1;
+        }
+
+        fetch('/carrito/cambiar/' + articulo_id + '', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({ cantidad: cantidad }),
+        }).then(response => {
+            if (response.status == 200) {
+                let cantidad = parseInt(document.getElementById('cantidad-' + articulo_id).value);
+                let precio = parseFloat(document.getElementById('cantidad-' + articulo_id).getAttribute('data-precio'));
+                document.getElementById('precio-' + articulo_id).innerText = '$' + (cantidad * precio);
+                actualizarTotal();
+            } else {
+                throw new Error('No se pudo cambiar la cantidad del artículo en el carrito');
+            }
+        })
+    }
+
+    {% for articulo in Articulo %}
+    document.getElementById('restar-{{articulo.id}}').addEventListener('click', function () { restarArticulo({{ articulo.id }}) });
+    document.getElementById('cantidad-{{articulo.id}}').addEventListener('input', function () { alEscribirCantidad({{ articulo.id }}) });
+    document.getElementById('sumar-{{articulo.id}}').addEventListener('click', function () { sumarArticulo({{ articulo.id }}) });
+    {% endfor %}
+
+    // Botón de pagar
+    document.getElementById('boton-pagar').addEventListener('click', function () {
+        window.location.href = '/carrito/pagar/';
+    });
+
+    document.addEventListener('DOMContentLoaded', actualizarTotal);
+</script>
+
+{% endblock %}

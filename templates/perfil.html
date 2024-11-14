@@ -1,0 +1,32 @@
+{% extends "header.html" %}
+{% load static %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+            <div class="col-md-6">
+                <h1 class="display-5 fw-bolder">Perfil de {{datos_usuario.nombre}}</h1>
+                
+                <p class="lead"><strong>Nombre: </strong>{{datos_usuario.nombre}}</p>
+                <p class="lead"><strong>Rut: </strong>{{datos_usuario.rut_completo}}</p>
+                <p class="lead"><strong>Apellido paterno: </strong>{{datos_usuario.apellido_Paterno}}</p>
+                <p class="lead"><strong>Apellido materno: </strong>{{datos_usuario.apellido_Materno}}</p>
+                <p class="lead"><strong>Correo: </strong>{{datos_usuario.correo}}</p>
+                <p class="lead"><strong>Dirección: </strong>{{datos_usuario.direccion}}</p>
+                <p class="lead"><strong>Número telefónico: </strong>{{datos_usuario.telefono}}</p>
+                <p class="lead"><strong>Código postal: </strong>{{datos_usuario.codigo_postal}}</p>
+            </div>
+        </div>
+    </div>
+    
+    {% if user.is_superuser %}
+    <div class="text-center mt-4">
+        <a class="btn btn-outline-primary btn-lg" href="/dashboard/usuarios/">Ir al panel</a>
+    </div>
+    {% endif %}
+    <div class="text-center mt-4">
+        <a class="btn btn-outline-primary btn-lg" href="/profile/editar/">Editar</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,245 @@
+{% extends "header.html" %}
+{% load static%}
+
+{% block content %}
+<div class="container-fluid mt-5 mb-5">
+  <div class="row g-2">
+
+      <!-- Filters -->
+      <div class="card col-md-3 bg-light p-2">
+          
+          <!-- Search -->
+          <div class="p-2">
+              <button class="btn btn-primary w-100" id="search">Buscar</button>
+          </div>
+
+          <div class="p-2">
+            <div class="heading d-flex justify-content-between align-items-center">
+                <h6 class="text-uppercase mb-0">Precio</h6>
+                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrecio" aria-expanded="false" aria-controls="collapsePrecio">
+                    <span>&#x25BC;</span> <!-- Flecha hacia abajo -->
+                </button>
+            </div>
+            <div class="collapse" id="collapsePrecio">
+                {% for nombre, precio in Precios.items %}
+                <div class="d-flex justify-content-between mt-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="{{precio}}" id="precio-{{precio}}" />
+                        <label class="form-check-label" for="precio-{{precio}}">
+                            {{nombre}}
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Color -->
+        <div class="p-2">
+            <div class="heading d-flex justify-content-between align-items-center">
+                <h6 class="text-uppercase mb-0">Color</h6>
+                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColor" aria-expanded="false" aria-controls="collapseColor">
+                    <span>&#x25BC;</span> <!-- Flecha hacia abajo -->
+                </button>
+            </div>
+            <div class="collapse" id="collapseColor">
+                {% for nombre, color in Colores %}
+                <div class="d-flex justify-content-between mt-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="{{nombre}}" id="color-{{nombre}}" />
+                        <label class="form-check-label" for="color-{{nombre}}">
+                            {{color}}
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Tipo -->
+        <div class="p-2">
+            <div class="heading d-flex justify-content-between align-items-center">
+                <h6 class="text-uppercase mb-0">Tipo</h6>
+                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTipo" aria-expanded="false" aria-controls="collapseTipo">
+                    <span>&#x25BC;</span> <!-- Flecha hacia abajo -->
+                </button>
+            </div>
+            <div class="collapse" id="collapseTipo">
+                {% for nombre, tipo in Tipo %}
+                <div class="d-flex justify-content-between mt-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="{{tipo}}" id="tipo-{{nombre}}" />
+                        <label class="form-check-label" for="tipo-{{nombre}}">
+                            {{tipo}}
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Género -->
+        <div class="p-2">
+            <div class="heading d-flex justify-content-between align-items-center">
+                <h6 class="text-uppercase mb-0">Género</h6>
+                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGenero" aria-expanded="false" aria-controls="collapseGenero">
+                    <span>&#x25BC;</span> <!-- Flecha hacia abajo -->
+                </button>
+            </div>
+            <div class="collapse" id="collapseGenero">
+                {% for nombre, genero in Genero %}
+                <div class="d-flex justify-content-between mt-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="{{genero}}" id="genero-{{nombre}}" />
+                        <label class="form-check-label" for="genero-{{nombre}}">
+                            {{genero}}
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Marca -->
+        <div class="p-2">
+            <div class="heading d-flex justify-content-between align-items-center">
+                <h6 class="text-uppercase mb-0">Marca</h6>
+                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMarca" aria-expanded="false" aria-controls="collapseMarca">
+                    <span>&#x25BC;</span> <!-- Flecha hacia abajo -->
+                </button>
+            </div>
+            <div class="collapse" id="collapseMarca">
+                {% for marca in Marca %}
+                <div class="d-flex justify-content-between mt-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="{{marca.id}}" id="marca-{{marca.id}}" />
+                        <label class="form-check-label" for="marca-{{marca.id}}">
+                            {{marca.nombre}}
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Talla -->
+        <div class="p-2">
+            <div class="heading d-flex justify-content-between align-items-center">
+                <h6 class="text-uppercase mb-0">Talla</h6>
+                <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTalla" aria-expanded="false" aria-controls="collapseTalla">
+                    <span>&#x25BC;</span> <!-- Flecha hacia abajo -->
+                </button>
+            </div>
+            <div class="collapse" id="collapseTalla">
+                {% for nombre, talla in Talla %}
+                <div class="d-flex justify-content-between mt-2">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="{{talla}}" id="talla-{{talla}}" />
+                        <label class="form-check-label" for="talla-{{talla}}">
+                            {{talla}}
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    
+
+    
+
+      <!-- Script for search -->
+      <script>
+        document.getElementById('search').addEventListener('click', function() {
+            var precios = [];
+            var colores = [];
+            var generos = [];
+            var marcas = [];
+            var tallas = [];
+            var tipos = [];
+    
+            {% for nombre, precio in Precios.items %}
+            if (document.getElementById('precio-{{precio}}').checked) {
+                precios.push("{{precio}}");
+            }
+            {% endfor %}
+    
+            {% for nombre, color in Colores %}
+            if (document.getElementById('color-{{nombre}}').checked) {
+                colores.push("{{color}}");
+            }
+            {% endfor %}
+    
+            {% for nombre, genero in Genero %}
+            if (document.getElementById('genero-{{nombre}}').checked) {
+                generos.push("{{nombre}}");
+            }
+            {% endfor %}
+    
+            {% for marca in Marca %}
+            if (document.getElementById('marca-{{marca.id}}').checked) {
+                marcas.push("{{marca.id}}");
+            }
+            {% endfor %}
+    
+            {% for numero, talla in Talla %}
+            if (document.getElementById('talla-{{numero}}').checked) {
+                tallas.push("{{numero}}");
+            }
+            {% endfor %}
+
+            {% for nombre, tipo in Tipo %}
+            if (document.getElementById('tipo-{{nombre}}').checked) {
+                tipos.push("{{nombre}}");
+            }
+            {% endfor %}
+    
+            var url = '/catalogo?';
+            if (precios.length > 0) {
+                url += 'precio=' + precios.join(',') + '&';
+            }
+            if (colores.length > 0) {
+                url += 'color=' + colores.join(',') + '&';
+            }
+            if (generos.length > 0) {
+                url += 'genero=' + generos.join(',') + '&';
+            }
+            if (marcas.length > 0) {
+                url += 'marca=' + marcas.join(',') + '&';
+            }
+            if (tallas.length > 0) {
+                url += 'talla=' + tallas.join(',') + '&';
+            }
+
+            if (tipos.length > 0) {
+                url += 'tipo=' + tipos.join(',') + '&';
+            }
+    
+            window.location.href = url;
+        });
+    </script>
+
+      <!-- Products -->
+      <div class="col-md-9 p-4">
+          <div class="row g-2">
+              {% for art in Articulo %}
+              <div class="col-md-4">
+                  <div class="card">
+                      <img src="{{art.imagen.url}}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="...">
+                      <div class="card-body">
+                          <h5 class="card-title">{{art.nombre}}</h5>
+                          <p class="card-text">{{art.descripcion|truncatewords:12}}</p>
+                          <p class="card-text">${{art.precio}}</p>
+                          <a href="/agregar-al-carrito/{{ art.id }}" class="btn btn-primary w-100">Comprar</a>
+                      </div>
+                  </div>
+              </div>
+              {% endfor %}
+          </div>
+      </div>
+  </div>
+</div>
+{% endblock %}
+
+
