@@ -5,17 +5,17 @@ from .articulos import TIPO_CHOICES, COLOR_CHOICES, GENERO_CHOICES, TALLAS_CHOIC
 
 
 class ArticuloMarca(models.Model):
-    nombre = models.CharField(max_length=50)
+    nombre = models.CharField(max_length=50, unique=True)
     empresa = models.CharField(max_length=50)
     linea = models.CharField(max_length=50, null=True)
 
     def __str__(self):
         return self.nombre
 
-
+#controlar dupliciadad de productos
 class Articulos(models.Model):
     imagen = models.ImageField(upload_to='imagenes/') 
-    nombre = models.CharField(max_length=50)
+    nombre = models.CharField(max_length=50, unique=True)
     precio = models.IntegerField()
     descripcion = models.CharField(max_length=150)
     stock = models.IntegerField()
@@ -27,7 +27,7 @@ class Articulos(models.Model):
 
 
 class CategoriaCard(models.Model):
-    titulo = models.CharField(max_length=100)
+    titulo = models.CharField(max_length=100, unique=True)
     imagen = models.ImageField(upload_to='imagenes/')  
     marca = models.ForeignKey(ArticuloMarca, on_delete=models.CASCADE, default=1, null=False)
 

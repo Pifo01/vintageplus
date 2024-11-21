@@ -67,7 +67,7 @@ urlpatterns = [
     path('dashboard/articulos/actualizar/<int:id>',views.Update_Articulos),
     path('dashboard/articulos/borrar/<int:id>',views.Delete_Articulos),
 
-    path('dashboard/marcas/',views.DashboardMarcas),
+    path('dashboard/marcas/',views.DashboardMarcas), 
     path('dashboard/marcas/crear/',views.Create_ArticuloMarca),
     path('dashboard/marcas/ver/<int:id>',views.View_ArticuloMarca),
     path('dashboard/marcas/actualizar/<int:id>',views.Update_ArticuloMarca),

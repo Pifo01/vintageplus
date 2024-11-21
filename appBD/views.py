@@ -129,7 +129,7 @@ def Create_Articulos(request):
         form=ArticuloForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-        return redirect("/dashboard")
+        return redirect("/dashboard/categoria")
     data={'form':form,'titulo':'Agregar Articulos'}
     return render(request,'create-Articulos.html',data)
 
@@ -138,7 +138,7 @@ def Create_cards(request):
         form=MarcasCardsForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-        return redirect("/dashboard")
+        return redirect("/dashboard/categoria")
 
     form=MarcasCardsForm()
     data={'form':form,'titulo':'Agregar cards'}
@@ -161,7 +161,7 @@ def Update_Articulos(request,id):
             Articulo.talla=form.cleaned_data['talla']
             Articulo.tipo=form.cleaned_data['tipo']
             Articulo.save()
-        return redirect("/dashboard")
+        return redirect("/dashboard/articulos")
     data={'form':form,'titulo':'Actualizar Articulos'}
     return render(request,'create-Articulos.html',data)
 
@@ -177,7 +177,7 @@ def Update_cards(request,id):
             MarcaNueva=form.cleaned_data['marca']
             cards.marca=MarcaNueva
             cards.save()
-        return redirect("/dashboard")
+        return redirect("/dashboard/categoria")
     data={'form':form,'titulo':'Actualizar card','prev':'/dashboard/categoria/'}
     return render(request,'create-Articulos.html',data)
 
@@ -192,7 +192,7 @@ def Update_ArticuloMarca(request,id):
             Marca.empresa=form.cleaned_data['empresa']
             Marca.linea=form.cleaned_data['linea']
             Marca.save()
-        return redirect("/index-create")
+        return redirect("/dashboard/marcas")
     data={'form':form,'titulo':'Actualizar Marca de Articulos'}
     return render(request,'create-Articulos.html',data)
 
@@ -203,7 +203,7 @@ def Update_Usuario(request, id):
         form=EditarUsuarioForm(request.POST, request.FILES, instance=datos_usuario)
         if form.is_valid():
             form.save()
-        return redirect("/dashboard/usuarios/")
+        return redirect("/dashboard/usuarios")
     data={'form':form,'titulo':'Actualizar Usuario','prev':'/dashboard/usuarios/'}
     return render(request,'create-Articulos.html',data)
 
@@ -215,7 +215,7 @@ def Create_ArticuloMarca(request):
         form=ArticuloMarcaForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-        return redirect("/dashboard/marcas/")
+        return redirect("/dashboard/marcas")
     data={'form':form,'titulo':'Agregar Marca de Articulos'}
     return render(request,'create-Articulos.html',data)
 
@@ -269,7 +269,7 @@ def Vermercaderia(request):
 def Delete_Usuario(request,id):
     datos_usuario=DatosUsuario.objects.get(id=id)
     datos_usuario.delete()
-    return redirect("/dashboard/usuarios/")
+    return redirect("/dashboard/usuarios")
 
 
 def Delete_Articulos(request,id):
