@@ -12,7 +12,7 @@ class ArticuloMarca(models.Model):
     def __str__(self):
         return self.nombre
 
-#controlar dupliciadad de productos
+#Falta saltar alerts
 class Articulos(models.Model):
     imagen = models.ImageField(upload_to='imagenes/') 
     nombre = models.CharField(max_length=50, unique=True)
