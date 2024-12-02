@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.db import models
-
 from .articulos import TIPO_CHOICES, COLOR_CHOICES, GENERO_CHOICES, TALLAS_CHOICES
 
 
@@ -11,14 +10,14 @@ class ArticuloMarca(models.Model):
 
     def __str__(self):
         return self.nombre
-
+    
 #Falta saltar alerts
 class Articulos(models.Model):
     imagen = models.ImageField(upload_to='imagenes/') 
     nombre = models.CharField(max_length=50, unique=True)
     precio = models.IntegerField()
     descripcion = models.CharField(max_length=150)
-    stock = models.IntegerField()
+    stock = models.PositiveIntegerField(default=0)
     marca = models.ForeignKey(ArticuloMarca, on_delete=models.CASCADE, default=1, null=False)
     color = models.CharField(max_length=20, choices=COLOR_CHOICES)
     genero = models.CharField(max_length=20, choices=GENERO_CHOICES)
@@ -39,10 +38,10 @@ class SoporteTicket(models.Model):
     resuelto = models.BooleanField(default=False)
 
 class DatosUsuario(models.Model):
-    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)
+    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True)  # Opcional
     nombre = models.CharField(max_length=100, null=False) 
-    rut = models.IntegerField(unique=True, default=12345678, null=False)  # Agregado unique=True
-    digito_verificador = models.CharField(default=1, max_length=1, null=False)
+    rut = models.IntegerField(unique=True, default=12345678, null=False)
+    digito_verificador = models.CharField(default=1,max_length=1, null=False)
     apellido_Paterno = models.CharField(max_length=100, null=False)
     apellido_Materno = models.CharField(max_length=100, null=False)
     correo = models.EmailField(null=False)
@@ -53,6 +52,7 @@ class DatosUsuario(models.Model):
     def rut_completo(self):
         rut_str = f"{self.rut:,}".replace(",", ".")
         return f"{rut_str}-{self.digito_verificador}"
+
 
 class Ventas(models.Model):
     fecha = models.DateField(auto_now_add=True)

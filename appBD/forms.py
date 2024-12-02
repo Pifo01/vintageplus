@@ -1,6 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.db import OperationalError
+from django.core.exceptions import ValidationError
 from django import forms 
 
 from .models import CategoriaCard
@@ -146,6 +147,12 @@ class ArticuloMarcaForm(forms.ModelForm):
     class Meta:
         model=ArticuloMarca
         fields='__all__'
+    
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        if ArticuloMarca.objects.filter(nombre=nombre).exists():
+            raise ValidationError(f"El artículo con nombre '{nombre}' ya existe.")
+        return nombre
 
 
 
