@@ -12,18 +12,6 @@ from .models import Articulos
 
 
 
-def ObtenerMarcas():
-    lista_marcas = []
-    try:
-        marcas = ArticuloMarca.objects.all()
-        for marca in marcas:
-            lista_marcas.append((marca.id, marca.nombre))
-    except:
-        lista_marcas = []
-    return lista_marcas
-
-
-
 class LoginForm(forms.Form):
     username = forms.CharField(label='Nombre de usuario', max_length=100)
     password = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
@@ -38,6 +26,25 @@ class UserRegisterForm(forms.ModelForm):
 
     username = forms.CharField(label='Nombre de usuario', max_length=40, required=True)
     password = forms.CharField(label='Contraseña', widget=forms.PasswordInput, required=True)
+
+    def clean_rut(self):
+        rut = self.cleaned_data.get('rut')
+        if DatosUsuario.objects.filter(rut=rut).exists():
+            raise ValidationError("El Rut ya está en uso.")
+        return rut
+    
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("El nombre de usuario ya está en uso.")
+        return username
+    
+    def clean_correo(self):
+        correo = self.cleaned_data.get('correo')
+        if DatosUsuario.objects.filter(correo=correo).exists():
+            raise ValidationError("el correo ya está en uso.")
+        return correo
+
 
     def __init__(self, *args, **kwargs):
         super(UserRegisterForm, self).__init__(*args, **kwargs)

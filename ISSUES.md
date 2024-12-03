@@ -4,11 +4,11 @@
 - **No se reciben o no se muestra ningun Articulo en la pagina**
 - **Los datos en los formulario no se muestran correctamente**
 
-## Version de MariaDB no soportada
+# Version de MariaDB no soportada
 
 Al intentar ejecutar o instalar el modulo que ejecuta la libreria MySQL genera un error que la version de MariaDB no es soportada. Este problema esta directamente relacionado con la version de Django y Python que se esta utilizando. Para solucionar este problema se debe instalar una version especifica de Django y Python que soporte la version de MariaDB que se esta utilizando.
 
-### Solucion
+## Solucion
 - Instalar una version de python menor o igual a la 3.11, aqui hay un enlace de descarga de [Python 3.11.9](https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe)
 - Instalar una version de Django menor o igual a la 3.1, para instalarlo se ejecuta el siguiente comando:
 ```bash
@@ -19,11 +19,11 @@ O tambien se puede instalar todas las librerias usando el archivo `requirements.
 pip install -r requirements.txt
 ```
 
-## No se reciben o no se muestra ningun Articulo en la pagina
+# No se reciben o no se muestra ningun Articulo en la pagina
 
 Cuando se intentaba hacer una iteracion o buscar todos los articulos de una variable, por ejemplo `Articulos`, varias veces pasaba que no se mostraba ningun articulo en la pagina, esto se debe a que la variable `Articulos` no estaba siendo pasada correctamente a la plantilla HTML.
 
-### Solucion
+## Solucion
 
 - En la vista que se debe declarar la variable con su respectivo nombre, su nombre esta relacionado directamente por el nombre colocado el diccionario a su izquierda, aqui un ejemplo:
 ```python
@@ -61,7 +61,7 @@ Aqui hay un ejemplo de como se puede mostrar los articulos en la plantilla HTML 
 {% endfor %}
 ```
 
-## Los datos en los formulario no se muestran correctamente
+# Los datos en los formulario no se muestran correctamente
 
 Cuando intentamos mostrar los datos de un formulario usando de base un modelo, algunos modelos que incluyan llave foranea se muestran de la siguiente forma:
 ```sh
@@ -75,7 +75,7 @@ Cuando intentamos mostrar los datos de un formulario usando de base un modelo, a
 
 Aun si no se ha tocado el codigo en la plantilla HTML o en `form.py`, los datos no se muestran correctamente. Este problema se debe a que el modelo no tiene un metodo `__str__` que permita mostrar los datos de una forma mas legible.
 
-### Solucion
+## Solucion
 - Agregar un metodo `__str__` en el modelo que se quiere mostrar de una forma mas legible, por ejemplo:
 ```python
 class Articulo(models.Model):

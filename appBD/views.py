@@ -38,19 +38,10 @@ def register(request):
             )
             usuario.save()
 
-            datousuario = DatosUsuario.objects.create(
-                user = usuario,
-                rut = form.cleaned_data.get('rut'),
-                digito_verificador = form.cleaned_data.get('digito_verificador'),
-                nombre = form.cleaned_data.get('nombre'),
-                apellido_Paterno = form.cleaned_data.get('apellido_Paterno'),
-                apellido_Materno = form.cleaned_data.get('apellido_Materno'),
-                correo = usuario.email,
-                telefono = form.cleaned_data.get('telefono'),
-                direccion = form.cleaned_data.get('direccion'),
-                codigo_postal = form.cleaned_data.get('codigo_postal')
-            )
-            datousuario.save()
+            # Buscar DatosUsuario y establecer el valor de usuario
+            datos_usuario = DatosUsuario.objects.get(correo=form.cleaned_data.get('correo'))
+            datos_usuario.user = usuario
+            datos_usuario.save()
 
             # Autenticar al usuario y iniciar sesión
             user = authenticate(username=form.cleaned_data.get('username'), password=form.cleaned_data.get('password'))
@@ -67,14 +58,18 @@ def SesionIniciada(request) -> bool:
     return request.user.is_authenticated
 
 def VerArticulo(request, id):
-    Articulo = Articulos.objects.get(id=id)
-    todos = Articulos.objects.all().order_by('?')[:9]
-    data={"Articulo": Articulo, 'todos': todos}
-    return render(request, 'ver-articulo.html', data)
+    try:
+        articulo = Articulos.objects.get(id=id, activo=True)
+        todos = Articulos.objects.filter(activo=True).order_by('?')[:9]
+        data = {"Articulo": articulo, 'todos': todos}
+        return render(request, 'ver-articulo.html', data)
+    except Articulos.DoesNotExist:
+        messages.error(request, 'El artículo no existe o está deshabilitado.')
+        return redirect('index')  # Redirigir a una página segura
 
 def IndexPagina(request):
-    Articulo = Articulos.objects.all().order_by('?')[:9]
-    return render(request, 'index.html', {'Articulos': Articulo})
+    articulos = Articulos.objects.filter(activo=True).order_by('?')[:9]
+    return render(request, 'index.html', {'Articulos': articulos})
 
 def Index_Create(request):
     if SesionIniciada(request):
@@ -108,18 +103,18 @@ def Index_Image(request, image):
 ## Cards de articulos ##
 
 def Index_usuario(request):
-    Articulo=Articulos.objects.all() #Select * from Articulo
-    data={'Articulo':Articulo}
-    return render(request,'index.html',data)
+    articulos = Articulos.objects.filter(activo=True)
+    data = {'Articulo': articulos}
+    return render(request, 'index.html', data)
 
 def Index_Marcas(request):
-    cards=CategoriaCard.objects.all() #Select * from cards
+    cards=CategoriaCard.objects.filter(activo=True) #Select * from cards
     data={'cards':cards}
     return render(request,'marcas.html',data)
 
 def Index_ArticulosMarcaBuscar(request, id):
     Marca=ArticuloMarca.objects.get(id=id) #Select * from MarcaS
-    Articulo=Articulos.objects.filter(marca=id)  # Use filter instead of get to retrieve multiple objects
+    Articulo=Articulos.objects.filter(marca=id, activo=True)  # Use filter instead of get to retrieve multiple objects
     data={'Articulo':Articulo, 'Marca':Marca }
     return render(request,'marcasbuscadas.html',data)
 
@@ -220,7 +215,7 @@ def Create_ArticuloMarca(request):
     return render(request,'create-Articulos.html',data)
 
 def View_Articulos(request,id):
-    Articulo=Articulos.objects.get(id=id)
+    Articulo=Articulos.objects.get(id=id, activo=True)
     data={"Articulo": Articulo}
     return render(request,'ver-Articulo.html',data)
 
@@ -276,6 +271,17 @@ def Delete_Articulos(request,id):
     Articulo=Articulos.objects.get(id=id)
     Articulo.delete()
     return redirect("/dashboard/articulos")
+
+def Disable_Articulos(request, id):
+    try:
+        articulo = Articulos.objects.get(id=id)
+        articulo.activo = False  # Marcamos como deshabilitado
+        articulo.save()
+        messages.success(request, f'El artículo "{articulo.nombre}" ha sido deshabilitado.')
+    except Articulos.DoesNotExist:
+        messages.error(request, 'El artículo no existe.')
+    return redirect("/dashboard/articulos")
+
 
 def Delete_cards(request,id):
     cards=CategoriaCard.objects.get(id=id)
@@ -767,3 +773,15 @@ def Update_Perfil(request):
         return redirect("/profile")
     data={'form':form,'titulo':'Actualizar Usuario','prev':'/profile'}
     return render(request,'create-Articulos.html',data)
+
+
+
+def Disable_Articulos(request, id):
+    try:
+        articulo = Articulos.objects.get(id=id)
+        articulo.activo = False  # Marcamos como deshabilitado
+        articulo.save()
+        messages.success(request, f'El artículo "{articulo.nombre}" ha sido deshabilitado.')
+    except Articulos.DoesNotExist:
+        messages.error(request, 'El artículo no existe.')
+    return redirect("/dashboard/articulos")

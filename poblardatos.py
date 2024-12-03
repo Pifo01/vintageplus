@@ -40,44 +40,53 @@ def crear_rut():
 def create_articulo_marca(n=10):
     marcas = []
     for _ in range(n):
-        marca = ArticuloMarca(
-            nombre=fake.company(),
-            empresa=fake.company_suffix(),
-            linea=fake.word()
-        )
-        marca.save()
-        marcas.append(marca)
+        try:
+            marca = ArticuloMarca(
+                nombre=fake.company(),
+                empresa=fake.company_suffix(),
+                linea=fake.word()
+            )
+            marca.save()
+            marcas.append(marca)
+        except:
+            pass
     return marcas
 
 def create_articulos(marcas, n=50):
     articulos = []
     for _ in range(n):
-        articulo = Articulos.objects.create(
-            imagen=random.choice(imagenes),
-            nombre=fake.word(),
-            precio=random.randint(1000, 100000),
-            descripcion=fake.text(max_nb_chars=150),
-            stock=random.randint(1, 100),
-            marca=random.choice(marcas),
-            color=random.choice(COLOR_CHOICES)[0],
-            genero=random.choice(GENERO_CHOICES)[0],
-            talla=random.choice(TALLAS_CHOICES)[0],
-            tipo=random.choice(TIPO_CHOICES)[0]
-        )
-        articulo.save()
-        articulos.append(articulo)
+        try:
+            articulo = Articulos.objects.create(
+                imagen=random.choice(imagenes),
+                nombre=fake.word(),
+                precio=random.randint(1000, 100000),
+                descripcion=fake.text(max_nb_chars=150),
+                stock=random.randint(1, 100),
+                marca=random.choice(marcas),
+                color=random.choice(COLOR_CHOICES)[0],
+                genero=random.choice(GENERO_CHOICES)[0],
+                talla=random.choice(TALLAS_CHOICES)[0],
+                tipo=random.choice(TIPO_CHOICES)[0]
+            )
+            articulo.save()
+            articulos.append(articulo)
+        except:
+            pass
     return articulos
 
 def create_categoria_card(marcas, n=10):
     categorias = []
     for _ in range(n):
-        categoria = CategoriaCard.objects.create(
-            titulo=fake.word(),
-            imagen=random.choice(imagenes),
-            marca=random.choice(marcas)
-        )
-        categoria.save()
-        categorias.append(categoria)
+        try:
+            categoria = CategoriaCard.objects.create(
+                titulo=fake.word(),
+                imagen=random.choice(imagenes),
+                marca=random.choice(marcas)
+            )
+            categoria.save()
+            categorias.append(categoria)
+        except:
+            pass
     return categorias
 
 def create_ventas(articulos, usuarios, n=20):

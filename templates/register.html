@@ -12,8 +12,52 @@
     <h2>Crear una cuenta</h2>
     <form method="POST">
       {% csrf_token %}
-      {{ form.as_p }}
+        <p>
+          <label for="id_rut">Rut:</label>
+          <div class="input-group mb-3">
+            <input type="number" name="rut" value="12345678" class="form-control d-inline-block w-50" required="" id="id_rut">
+            <span class="input-group-text">-</span>
+            <input type="text" name="digito_verificador" value="1" maxlength="1" class="form-control d-inline-block w-25" placeholder="DV" required="" id="id_digito_verificador">
+          </div>
+        </p>
+        <p>
+          <label for="id_nombre">Nombre:</label>
+          <input type="text" name="nombre" maxlength="100" class="form-control" required="" id="id_nombre">
+        </p>
+        <p>
+          <label for="id_apellido_Paterno">Apellido Paterno:</label>
+          <input type="text" name="apellido_Paterno" maxlength="100" class="form-control" required="" id="id_apellido_Paterno">
+        </p>
+        <p>
+          <label for="id_apellido_Materno">Apellido Materno:</label>
+          <input type="text" name="apellido_Materno" maxlength="100" class="form-control" required="" id="id_apellido_Materno">
+        </p>
+        <p>
+          <label for="id_direccion">Direccion:</label>
+          <input type="text" name="direccion" maxlength="100" class="form-control" required="" id="id_direccion">
+        </p>
+        <p>
+          <label for="id_correo">Correo:</label>
+          <input type="email" name="correo" maxlength="254" class="form-control" placeholder="correo@example.com" required="" id="id_correo">
+        </p>
+        <p>
+          <label for="id_telefono">Telefono:</label>
+          <input type="text" name="telefono" maxlength="15" class="form-control" required="" id="id_telefono">
+        </p>
+        <p>
+          <label for="id_codigo_postal">Codigo postal:</label>
+          <input type="text" name="codigo_postal" maxlength="15" class="form-control" required="" id="id_codigo_postal">
+        </p>
+        <p>
+          <label for="id_username">Nombre de usuario:</label>
+          <input type="text" name="username" maxlength="40" class="form-control" required="" id="id_username">
+        </p>
+        <p>
+          <label for="id_password">Contraseña:</label>
+          <input type="password" name="password" class="form-control" required="" id="id_password">
+        </p>
       <button type="submit" class="btn btn-primary mb-5">Registrarse</button>
     </form>
   </div>
+  
 {% endblock %}
