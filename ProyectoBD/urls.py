@@ -67,7 +67,8 @@ urlpatterns = [
     path('dashboard/articulos/actualizar/<int:id>',views.Update_Articulos),
     path('dashboard/articulos/borrar/<int:id>',views.Delete_Articulos),
     path('dashboard/articulos/Deshabilitar/<int:id>',views.Disable_Articulos),
-
+    path('dashboard/articulos/habilitar/<int:id>/', views.Habilitar_Articulo),
+    
     path('dashboard/marcas/',views.DashboardMarcas), 
     path('dashboard/marcas/crear/',views.Create_ArticuloMarca),
     path('dashboard/marcas/ver/<int:id>',views.View_ArticuloMarca),
@@ -84,6 +85,8 @@ urlpatterns = [
     path('dashboard/usuarios/ver/<int:id>',views.View_Usuario),
     path('dashboard/usuarios/actualizar/<int:id>',views.Update_Usuario),
     path('dashboard/usuarios/borrar/<int:id>',views.Delete_Usuario),
+    path('dashboard/usuarios/deshabilitar/<int:user_id>/', views.deshabilitar_usuario),
+    path('dashboard/usuarios/habilitar/<int:user_id>/', views.habilitar_usuario),
 
     path('dashboard/mercaderias/',views.Vermercaderia),
 ]

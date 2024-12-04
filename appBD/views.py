@@ -108,15 +108,15 @@ def Index_usuario(request):
     return render(request, 'index.html', data)
 
 def Index_Marcas(request):
-    cards=CategoriaCard.objects.filter(activo=True) #Select * from cards
-    data={'cards':cards}
-    return render(request,'marcas.html',data)
+    cards = CategoriaCard.objects.filter(activo=True)  
+    data = {'cards': cards}
+    return render(request, 'marcas.html', data)
 
 def Index_ArticulosMarcaBuscar(request, id):
-    Marca=ArticuloMarca.objects.get(id=id) #Select * from MarcaS
-    Articulo=Articulos.objects.filter(marca=id, activo=True)  # Use filter instead of get to retrieve multiple objects
-    data={'Articulo':Articulo, 'Marca':Marca }
-    return render(request,'marcasbuscadas.html',data)
+    Marca = ArticuloMarca.objects.get(id=id) 
+    Articulo = Articulos.objects.filter(marca=id, activo=True) 
+    data = {'Articulo': Articulo, 'Marca': Marca}
+    return render(request, 'marcasbuscadas.html', data)
 
 def Create_Articulos(request):
     form=ArticuloForm()
@@ -263,13 +263,15 @@ def Vermercaderia(request):
 
 def Delete_Usuario(request,id):
     datos_usuario=DatosUsuario.objects.get(id=id)
-    datos_usuario.delete()
+    datos_usuario.activo = False
+    datos_usuario.save()
     return redirect("/dashboard/usuarios")
 
 
 def Delete_Articulos(request,id):
     Articulo=Articulos.objects.get(id=id)
-    Articulo.delete()
+    Articulo.activo = False
+    Articulo.save()
     return redirect("/dashboard/articulos")
 
 def Disable_Articulos(request, id):
@@ -285,53 +287,61 @@ def Disable_Articulos(request, id):
 
 def Delete_cards(request,id):
     cards=CategoriaCard.objects.get(id=id)
-    cards.delete()
+    cards.activo = False
+    cards.save()
     return redirect("/dashboard/categoria")
 
 
 def Delete_ArticuloMarca(request,id):
     MarcaArticulo=ArticuloMarca.objects.get(id=id)
-    MarcaArticulo.delete()
+    MarcaArticulo.activo = False
+    MarcaArticulo.save()
     return redirect("/dashboard/marcas")
 
 def Index_catalogo(request):
-    Articulo=Articulos.objects.filter(stock__gt=0) #Select * from Articulo where stock>0
-    Marca=ArticuloMarca.objects.all() #Select * from Marca
-
+    Articulo = Articulos.objects.filter(stock__gt=0, activo=True)
+    Marca = ArticuloMarca.objects.all()  
+    
     if request.GET.get('precio'):
-        # Vaciar Articulos para luego añadir los filtrados
+
         Articulo = Articulos.objects.none()
         GetPrecios = request.GET.get('precio').split(',')
-        # Filtrar por precio y precio - 10000
         for precio in GetPrecios:
             PrecioNumero = int(precio)
-            # Añadir articulos con el precio y el precio - 10000
-            Articulo = Articulo | Articulos.objects.filter(precio__range=[PrecioNumero-10000, PrecioNumero])
+            Articulo = Articulo | Articulos.objects.filter(precio__range=[PrecioNumero-10000, PrecioNumero], activo=True)
     
     if request.GET.get('color'):
         Colores = request.GET.get('color').split(',')
-        Articulo = Articulo.filter(color__in=Colores)
+        Articulo = Articulo.filter(color__in=Colores, activo=True)
 
     if request.GET.get('genero'):
         Generos = request.GET.get('genero').split(',')
-        Articulo = Articulo.filter(genero__in=Generos)
+        Articulo = Articulo.filter(genero__in=Generos, activo=True)
     
     if request.GET.get('marca'):
         Marcas = request.GET.get('marca').split(',')
-        Articulo = Articulo.filter(marca__in=Marcas)
+        Articulo = Articulo.filter(marca__in=Marcas, activo=True)
     
     if request.GET.get('talla'):
         Tallas = request.GET.get('talla').split(',')
-        Articulo = Articulo.filter(talla__in=Tallas)
+        Articulo = Articulo.filter(talla__in=Tallas, activo=True)
     
     if request.GET.get('tipo'):
         Tipos = request.GET.get('tipo').split(',')
-        Articulo = Articulo.filter(tipo__in=Tipos)
+        Articulo = Articulo.filter(tipo__in=Tipos, activo=True)
     
     Articulo = Articulo[:24]
 
-    data={'Articulo':Articulo,'Marca':Marca, 'Precios':PRECIOS, 'Colores':COLOR_CHOICES, 'Tipo':TIPO_CHOICES, 'Genero':GENERO_CHOICES, 'Talla':TALLAS_CHOICES}
-    return render(request,'catalogo.html',data)
+    data = {
+        'Articulo': Articulo,
+        'Marca': Marca,
+        'Precios': PRECIOS,
+        'Colores': COLOR_CHOICES,
+        'Tipo': TIPO_CHOICES,
+        'Genero': GENERO_CHOICES,
+        'Talla': TALLAS_CHOICES
+    }
+    return render(request, 'catalogo.html', data)
 
 
 def Login(request):
@@ -341,18 +351,22 @@ def Login(request):
     if SesionIniciada(request):
         return redirect("/index")
 
-    if request.method=='POST':
-        form=LoginForm(request.POST)
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
         if form.is_valid():
             user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password'])
             if user is not None:
-                response = redirect("/dashboard")
-                return response
+                if user.is_active:
+                    response = redirect("/dashboard")
+                    return response
+                else:
+                    data['error'] = "Tu cuenta está deshabilitada. Contacta al administrador."
             else:
                 data['error'] = "Usuario o contraseña incorrectos"
     
     data['form'] = form
-    return render(request,'login.html',data)
+    return render(request, 'login.html', data)
+
 
 
 
@@ -380,7 +394,7 @@ def shoe_list(request):
     if tipos:
         shoes = shoes.filter(tipo__in=tipos)
 
-    # Obtener los choices para colores, géneros, y tallas
+    
     color_choices = COLOR_CHOICES
     genero_choices = GENERO_CHOICES
     talla_choices = TALLAS_CHOICES  
@@ -388,7 +402,7 @@ def shoe_list(request):
 
     return render(request, 'catalogo.html', {
         'shoes': shoes,
-        'Precios': precios,  # Asegúrate de que este sea tu diccionario de precios
+        'Precios': precios,  
         'Colores': color_choices,
         'Genero': genero_choices,
         'Marca': ArticuloMarca.objects.all(),
@@ -785,3 +799,27 @@ def Disable_Articulos(request, id):
     except Articulos.DoesNotExist:
         messages.error(request, 'El artículo no existe.')
     return redirect("/dashboard/articulos")
+
+def Habilitar_Articulo(request, id):
+    articulo = get_object_or_404(Articulos, id=id)
+    
+    articulo.activo = True
+    articulo.save()
+    return redirect('/dashboard/articulos')
+
+
+@login_required
+def deshabilitar_usuario(request, user_id):
+    usuario = get_object_or_404(DatosUsuario, id=user_id)
+    if usuario.activo:
+        usuario.activo = False
+        usuario.save()
+    return redirect('/dashboard/usuarios')
+
+@login_required
+def habilitar_usuario(request, user_id):
+    usuario = get_object_or_404(DatosUsuario, id=user_id)
+    if not usuario.activo:
+        usuario.activo = True
+        usuario.save()
+    return redirect('/dashboard/usuarios')

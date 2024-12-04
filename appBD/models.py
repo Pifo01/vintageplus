@@ -7,7 +7,10 @@ class ArticuloMarca(models.Model):
     nombre = models.CharField(max_length=15, unique=True)
     empresa = models.CharField(max_length=15)
     linea = models.CharField(max_length=15, null=True)
-    
+
+    def __str__(self):
+        return self.nombre
+
 #Falta saltar alerts
 class Articulos(models.Model):
     imagen = models.ImageField(upload_to='imagenes/') 

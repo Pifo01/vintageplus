@@ -2,71 +2,87 @@
 
 {% block content %}
 
-    <div class="container text-bg-light text-center pt-3 pb-3 rounded-top border-bottom">
-        <div class="row">
-            <div class="col">
-                <p class="fs-2 m-0">Sección de Usuarios</p>
-            </div>
+<div class="container text-bg-light text-center pt-3 pb-3 rounded-top border-bottom">
+    <div class="row">
+        <div class="col">
+            <p class="fs-2 m-0">Sección de Usuarios</p>
         </div>
     </div>
-    <!-- Tabla -->
-    <table class="table table-striped table-hover align-middle rounded-bottom">
-        <thead>
-            <tr>
-                <th class="text-center">ID</th>
-                <th class="text-center">Nombre</th>
-                <th class="text-center">Rut Completo</th>
-                <th class="text-center">Apellidos</th>
-                <th class="text-center">Correo</th>
-                <th class="text-center">Direccion</th>
-                <th class="text-center">Numero Telefonico</th>
-                <th class="text-center">Codigo postal</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for datos in datos_usuario %}
-            <tr>
-                <td>{{datos.user_id}}</td>
-                <td>{{datos.nombre|capfirst}}</td> 
-                <td>{{datos.rut_completo}}</td>
-                <td>{{datos.apellido_Paterno}} {{datos.apellido_Materno}}</td>
-                <td>{{datos.correo}}</td>
-                <td>{{datos.direccion|truncatechars:24}}</td>
-                <td>{{datos.telefono}}</td>
-                <td>{{datos.codigo_postal}}</td>
-                <td>
-                    <a href="/dashboard/usuarios/ver/{{datos.id}}" class='btn btn-success btn-sm p-2'>
-                        <i class="bi bi-eye"></i>
-                    </a>
-                    <a href="/dashboard/usuarios/actualizar/{{datos.id}}" class='btn btn-warning btn-sm p-2'>
-                        <i class="bi bi-pencil"></i>
-                    </a>
-                    <button type="button" class="btn btn-danger btn-sm p-2" data-bs-toggle="modal" data-bs-target="#usuarios-delete{{datos.id}}">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            </tr>
+</div>
 
-            <!-- Modal -->
-            <div class="modal fade" id="usuarios-delete{{datos.id}}" tabindex="-1" aria-labelledby="usuarios-deletelabel{{datos.id}}" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="usuarios-deletelabel{{datos.id}}">Confirmar eliminación</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            ¿Estás seguro de que deseas eliminar al usuario {{datos.nombre}} {{datos.apellido_Paterno}}?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <a href="/dashboard/usuarios/borrar/{{datos.id}}" class="btn btn-danger">Eliminar</a>
-                        </div>
+<!-- Tabla -->
+<table class="table table-striped table-hover align-middle rounded-bottom">
+    <thead>
+        <tr>
+            <th class="text-center">ID</th>
+            <th class="text-center">Nombre</th>
+            <th class="text-center">Rut Completo</th>
+            <th class="text-center">Apellidos</th>
+            <th class="text-center">Correo</th>
+            <th class="text-center">Dirección</th>
+            <th class="text-center">Número Telefónico</th>
+            <th class="text-center">Código Postal</th>
+            <th class="text-center">Estado</th>
+            <th class="text-center">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for datos in datos_usuario %}
+        <tr class="{% if not datos.activo %}table-danger{% endif %}">
+            <td class="text-center">{{ datos.user_id }}</td>
+            <td>{{ datos.nombre|capfirst }}</td>
+            <td class="text-center">{{ datos.rut_completo }}</td>
+            <td>{{ datos.apellido_Paterno }} {{ datos.apellido_Materno }}</td>
+            <td>{{ datos.correo }}</td>
+            <td>{{ datos.direccion|truncatechars:24 }}</td>
+            <td class="text-center">{{ datos.telefono }}</td>
+            <td class="text-center">{{ datos.codigo_postal }}</td>
+            <td class="text-center">
+                {% if datos.activo %}
+                <span class="badge bg-success">Activo</span>
+                {% else %}
+                <span class="badge bg-danger">Inactivo</span>
+                {% endif %}
+            </td>
+            <td>
+            {% if datos.activo %}
+                <a href="/dashboard/usuarios/ver/{{datos.id}}" class="btn btn-success btn-sm p-2" title="Ver Usuario">
+                    <i class="bi bi-eye"></i>
+                </a>
+                <a href="/dashboard/usuarios/actualizar/{{datos.id}}" class="btn btn-warning btn-sm p-2" title="Actualizar Usuario">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <a href="/dashboard/usuarios/deshabilitar/{{datos.id}}" class="btn btn-danger btn-sm p-2" title="Deshabilitar Usuario">
+                    <i class="bi bi-stop"></i>
+                </a>
+            {% else %}
+                <a href="/dashboard/usuarios/habilitar/{{datos.id}}" class="btn btn-primary btn-sm p-2" title="Habilitar Usuario">
+                    <i class="bi bi-check-circle"></i> Habilitar
+                </a>
+            {% endif %}
+            </td>
+        </tr>
+
+        <!-- Modal de Confirmación para Eliminar -->
+        <div class="modal fade" id="usuarios-delete{{ datos.id }}" tabindex="-1" aria-labelledby="usuarios-deletelabel{{ datos.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="usuarios-deletelabel{{ datos.id }}">Confirmar eliminación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Estás seguro de que deseas eliminar al usuario <strong>{{ datos.nombre }} {{ datos.apellido_Paterno }}</strong>?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <a href="/dashboard/usuarios/borrar/{{datos.id}}" class="btn btn-danger">Eliminar</a>
                     </div>
                 </div>
             </div>
-            {%endfor%}
-        </tbody>
-    </table>
+        </div>
+        {% endfor %}
+    </tbody>
+</table>
+
 {% endblock %}

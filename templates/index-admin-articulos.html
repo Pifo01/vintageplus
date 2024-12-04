@@ -1,7 +1,7 @@
 {% extends "header-admin.html" %}
 
 {% block content %}
-    <!-- Paginacion -->
+    <!-- Paginación -->
     <nav class="d-flex justify-content-center">
         <ul class="pagination">
             {% for pag in CantidadPaginas %}
@@ -43,55 +43,70 @@
         </thead>
         <tbody>
             {% for ar in Articulos %}
-            <tr>
-                <td>{{ar.id}}</td>
+            <tr class="{% if not ar.activo %}table-danger{% endif %}">
+                <td>{{ ar.id }}</td>
                 <td class="text-center">
-                    <button type="button" class="btn btn-primary btn-sm p-2" data-bs-toggle="modal" data-bs-target="#modalimg-{{ar.id}}">
-                        <i class="bi bi-image"></i>
-                    </button>
+                    {% if ar.activo %}
+                        <button type="button" class="btn btn-primary btn-sm p-2" data-bs-toggle="modal" data-bs-target="#modalimg-{{ar.id}}">
+                            <i class="bi bi-image"></i>
+                        </button>
+                    {% endif %}
                 </td>
-                <td>{{ar.nombre|capfirst}}</td>
-                <td>${{ar.precio}}</td>
-                <td>{{ar.descripcion|truncatechars:24}}</td>
-                <td>{{ar.stock}}</td>
-                <td>{{ar.color|capfirst}}</td>
-                <td>{{ar.genero|capfirst}}</td>
-                <td>{{ar.talla}}</td>
-                <td>{{ar.tipo|capfirst}}</td>
-                <td>{{ar.marca}}</td>
+                <td>{{ ar.nombre|capfirst }}</td>
+                <td>${{ ar.precio }}</td>
+                <td>{{ ar.descripcion|truncatechars:24 }}</td>
+                <td>{{ ar.stock }}</td>
+                <td>{{ ar.color|capfirst }}</td>
+                <td>{{ ar.genero|capfirst }}</td>
+                <td>{{ ar.talla }}</td>
+                <td>{{ ar.tipo|capfirst }}</td>
+                <td>{{ ar.marca }}</td>
                 <td>
-                    <a href="/dashboard/articulos/ver/{{ar.id}}" class='btn btn-success btn-sm p-2'>
-                        <i class="bi bi-eye"></i>
-                    </a>
-                    <a href="/dashboard/articulos/actualizar/{{ar.id}}" class='btn btn-warning btn-sm p-2'>
-                        <i class="bi bi-pencil"></i>
-                    </a>
-                    <a href="/dashboard/articulos/borrar/{{ar.id}}" class='btn btn-danger btn-sm p-2'>
-                        <i class="bi bi-trash"></i>
-                    </a>
-                    <a href="/dashboard/articulos/Deshabilitar/{{ar.id}}" class='btn btn-warning btn-sm p-2'>
-                        <i class="bi bi-trash"></i>
-                    </a>
+                    {% if ar.activo %}
+                    <span class="badge bg-success">Activo</span>
+                    {% else %}
+                    <span class="badge bg-danger">Inactivo</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if ar.activo %}
+                        <a href="/dashboard/articulos/ver/{{ ar.id }}" class='btn btn-success btn-sm p-2'>
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="/dashboard/articulos/actualizar/{{ ar.id }}" class='btn btn-warning btn-sm p-2'>
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="/dashboard/articulos/Deshabilitar/{{ar.id}}" class='btn btn-danger btn-sm p-2'>
+                            <i class="bi bi-stop"></i>
+                        </a>
+                    {% else %}
+                        <a href="/dashboard/articulos/habilitar/{{ ar.id }}" class='btn btn-primary btn-sm p-2'>
+                            <i class="bi bi-check-circle"></i> Habilitar
+                        </a>
+                    {% endif %}
                 </td>
             </tr>
 
+            <!-- Modal de Imagen -->
+            {% if ar.activo %}
             <div class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" id="modalimg-{{ar.id}}">
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body mx-auto">
-                        <img src="{{ar.imagen.url}}" class="img-fluid" alt="">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
-                    </div>
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">{{ ar.nombre }}</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body mx-auto">
+                            <img src="{{ ar.imagen.url }}" class="img-fluid" alt="{{ ar.nombre }}">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
                     </div>
                 </div>
             </div>
-            {%endfor%}
+            {% endif %}
+            {% endfor %}
         </tbody>
     </table>
     <nav class="d-flex justify-content-center">
