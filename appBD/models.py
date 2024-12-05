@@ -7,6 +7,7 @@ class ArticuloMarca(models.Model):
     nombre = models.CharField(max_length=15, unique=True)
     empresa = models.CharField(max_length=15)
     linea = models.CharField(max_length=15, null=True)
+    activo = models.BooleanField(default=True)  # Campo para anular la marca
 
     def __str__(self):
         return self.nombre
@@ -68,6 +69,7 @@ class Ventas(models.Model):
     fecha = models.DateField(auto_now_add=True)
     total = models.IntegerField()
     articulos = models.ManyToManyField(Articulos, through='VentaArticulo')
+    anulada = models.BooleanField(default=False)
 
 class VentaArticulo(models.Model):
     venta = models.ForeignKey(Ventas, on_delete=models.CASCADE)

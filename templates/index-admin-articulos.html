@@ -1,6 +1,42 @@
 {% extends "header-admin.html" %}
 
 {% block content %}
+
+<div class="container text-bg-light text-center pt-3 pb-3 rounded-top border-bottom">
+    <form method="GET">
+        <div class="row">
+            <div class="col-md-2">
+                <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre" value="{{ request.GET.nombre }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="precio" class="form-control" placeholder="Buscar por precio" value="{{ request.GET.precio }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="talla" class="form-control" placeholder="Buscar por talla" value="{{ request.GET.talla }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="color" class="form-control" placeholder="Buscar por color" value="{{ request.GET.color }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="genero" class="form-control" placeholder="Buscar por género" value="{{ request.GET.genero }}">
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="tipo" class="form-control" placeholder="Buscar por tipo" value="{{ request.GET.tipo }}">
+            </div>
+            <div class="col-md-2">
+                <select name="estado" class="form-control">
+                    <option value="">Todos los estados</option>
+                    <option value="1" {% if request.GET.estado == '1' %}selected{% endif %}>Activo</option>
+                    <option value="0" {% if request.GET.estado == '0' %}selected{% endif %}>Inactivo</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+                <a href="/dashboard/articulos" class="btn btn-secondary">Limpiar</a>
+            </div>
+        </div>
+    </form>
+</div>
     <!-- Paginación -->
     <nav class="d-flex justify-content-center">
         <ul class="pagination">

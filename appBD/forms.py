@@ -152,9 +152,9 @@ class MarcasCardsForm(forms.ModelForm):
 
 class ArticuloMarcaForm(forms.ModelForm):
     class Meta:
-        model=ArticuloMarca
-        fields='__all__'
-    
+        model = ArticuloMarca
+        fields = ['nombre', 'empresa', 'linea', 'activo']
+
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
         if ArticuloMarca.objects.filter(nombre=nombre).exists():

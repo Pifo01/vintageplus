@@ -74,6 +74,8 @@ urlpatterns = [
     path('dashboard/marcas/ver/<int:id>',views.View_ArticuloMarca),
     path('dashboard/marcas/actualizar/<int:id>',views.Update_ArticuloMarca),
     path('dashboard/marcas/borrar/<int:id>',views.Delete_ArticuloMarca),
+    path('dashboard/marcas/anular/<int:id>', views.Anular_ArticuloMarca),
+    path('dashboard/marcas/toggle/<int:marca_id>/', views.Toggle_ArticuloMarca),
 
     path('dashboard/categoria/',views.DashboardCards),
     path('dashboard/categoria/crear/',views.Create_cards),
@@ -89,4 +91,5 @@ urlpatterns = [
     path('dashboard/usuarios/habilitar/<int:user_id>/', views.habilitar_usuario),
 
     path('dashboard/mercaderias/',views.Vermercaderia),
+    path('dashboard/ventas/anular/<int:id>/', views.AnularVenta),
 ]

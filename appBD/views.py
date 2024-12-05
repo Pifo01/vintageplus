@@ -23,7 +23,12 @@ from django.conf import settings
 from collections import Counter
 from datetime import datetime, timedelta
 import os
+from django.db.models import Prefetch
 import json
+from django.utils.dateparse import parse_date
+from collections import Counter
+from django.db.models import Prefetch, Q
+from datetime import timedelta, datetime
 
 def register(request):
     if request.method == 'POST':
@@ -205,14 +210,38 @@ def Update_Usuario(request, id):
 
 
 def Create_ArticuloMarca(request):
-    form=ArticuloMarcaForm()
-    if request.method=='POST':
-        form=ArticuloMarcaForm(request.POST, request.FILES)
+    form = ArticuloMarcaForm()
+    if request.method == 'POST':
+        form = ArticuloMarcaForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
         return redirect("/dashboard/marcas")
-    data={'form':form,'titulo':'Agregar Marca de Articulos'}
-    return render(request,'create-Articulos.html',data)
+    data = {'form': form, 'titulo': 'Agregar Marca de Articulos'}
+    return render(request, 'create-Articulos.html', data)
+
+
+@login_required(login_url='login')
+def Anular_ArticuloMarca(request, id):
+    if not request.user.is_staff:
+        raise PermissionDenied
+
+    Marca = get_object_or_404(ArticuloMarca, pk=id)
+    
+    Marca.activo = False
+    Marca.save()
+
+    return redirect('/dashboard/marcas') 
+
+def Toggle_ArticuloMarca(request, marca_id):
+    # Obtener la marca usando el ID
+    marca = get_object_or_404(ArticuloMarca, id=marca_id)
+    
+    # Cambiar el estado de 'activo'
+    marca.activo = not marca.activo  # Cambia el valor (True a False y viceversa)
+    marca.save()
+
+    # Redirigir de vuelta a la lista de marcas
+    return redirect('/dashboard/marcas')
 
 def View_Articulos(request,id):
     Articulo=Articulos.objects.get(id=id, activo=True)
@@ -585,17 +614,73 @@ def Dashboard(request):
 def DashboardVentas(request):
     if not request.user.is_staff:
         raise PermissionDenied
+
+    # Calcular datos generales
     total_productos = Articulos.objects.count()
     total_marcas = ArticuloMarca.objects.count()
     total_categorias = CategoriaCard.objects.count()
     total_stock = sum(articulo.stock for articulo in Articulos.objects.all())
+
+    # Calcular artículos por marca
     articulos_por_marca = Counter(articulo.marca for articulo in Articulos.objects.all())
     marcas = [marca.nombre for marca in ArticuloMarca.objects.all()]
     cantidades = [articulos_por_marca[marca] for marca in marcas]
-    articulos = Articulos.objects.all()
+
+        # Filtros de búsqueda
+    ventas = Ventas.objects.prefetch_related(
+        Prefetch(
+            'ventaarticulo_set',
+            queryset=VentaArticulo.objects.select_related('datos', 'articulo')
+        ),
+        'articulos'
+    ).order_by('-id')
+
+    # Aplicar filtros de rango de fecha y comprador
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+    comprador = request.GET.get('comprador') or ""
+
+    if fecha_inicio:
+        
+        try:
+            fecha_inicio = datetime.strptime(fecha_inicio, "%Y-%m-%d").date()
+        except ValueError:
+            fecha_inicio = None
+    if fecha_fin:
+        try:
+            fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d").date()
+        except ValueError:
+            fecha_fin = None
+
+    if fecha_inicio and fecha_fin:
+
+        ventas = ventas.filter(fecha__range=[fecha_inicio, fecha_fin])
+    elif fecha_inicio:
+        ventas = ventas.filter(fecha__gte=fecha_inicio)
+    elif fecha_fin:
+        ventas = ventas.filter(fecha__lte=fecha_fin)
+    if comprador:
+        ventas = ventas.filter(ventaarticulo__datos__nombre__icontains=comprador)
+
+    # Optimizar carga de ventas y datos relacionados
     hoy = datetime.now()
     hace_7_dias = hoy - timedelta(days=7)
-    ventas = Ventas.objects.filter(fecha__range=[hace_7_dias, hoy]).order_by('-id')
+    ventas = ventas.filter(fecha__range=[hace_7_dias, hoy]).order_by('-id')
+
+    """
+    hoy = datetime.now()
+    hace_7_dias = hoy - timedelta(days=7)
+    ventas = ventas.filter(fecha__range=[hace_7_dias, hoy]).prefetch_related(
+        Prefetch(
+            'ventaarticulo_set',
+            queryset=VentaArticulo.objects.select_related('datos', 'articulo')
+        )
+    ).order_by('-id')
+
+    ventas = ventas.prefetch_related(
+        'articulos', 'ventaarticulo_set__datos'
+    ).order_by('-id')
+    """
 
     context = {
         'total_productos': total_productos,
@@ -604,8 +689,11 @@ def DashboardVentas(request):
         'total_stock': total_stock,
         'marcas': marcas,
         'cantidades': cantidades,
-        'articulos': articulos,
         'ventas': ventas,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+        'comprador': comprador,
+        
     }
     return render(request, 'index-admin-ventas.html', context)
 
@@ -629,20 +717,50 @@ def DashboardCrud(request):
 def DashboardArticulos(request):
     if not request.user.is_staff:
         raise PermissionDenied
-    pagina = 1
-    if request.GET.get('pagina', 1):
-        pagina = int(request.GET.get('pagina', 1))
 
+    # Obtener los filtros desde la solicitud
+    nombre = request.GET.get('nombre', '').strip()
+    precio = request.GET.get('precio', '').strip()
+    talla = request.GET.get('talla', '').strip()
+    color = request.GET.get('color', '').strip()
+    genero = request.GET.get('genero', '').strip()
+    tipo = request.GET.get('tipo', '').strip()
+    estado = request.GET.get('estado', '').strip()
+    pagina = int(request.GET.get('pagina', 1))
+
+    # Filtrar artículos
+    articulos = Articulos.objects.all()
+    if nombre:
+        articulos = articulos.filter(nombre__icontains=nombre)
+    if precio:
+        articulos = articulos.filter(precio__icontains=precio)
+    if talla:
+        articulos = articulos.filter(talla__icontains=talla)
+    if color:
+        articulos = articulos.filter(color__icontains=color)
+    if genero:
+        articulos = articulos.filter(genero__icontains=genero)
+    if tipo:
+        articulos = articulos.filter(tipo__icontains=tipo)
+    if estado != '':
+        articulos = articulos.filter(activo=bool(int(estado)))
+
+    # Paginación
     articulos_por_pagina = 15
     inicio = (pagina - 1) * articulos_por_pagina
     fin = inicio + articulos_por_pagina
-    articulos = Articulos.objects.all()[inicio:fin]
+    articulos_paginados = articulos[inicio:fin]
 
-    cantidad_articulos = Articulos.objects.count()
+    cantidad_articulos = articulos.count()
     cantidad_paginas = (cantidad_articulos + articulos_por_pagina - 1) // articulos_por_pagina
     paginas = list(range(1, cantidad_paginas + 1))
 
-    return render(request, 'index-admin-articulos.html', {'Articulos': articulos, 'Pagina': pagina, 'CantidadPaginas': paginas})
+    return render(request, 'index-admin-articulos.html', {
+        'Articulos': articulos_paginados,
+        'Pagina': pagina,
+        'CantidadPaginas': paginas,
+        'request': request,
+    })
 
 @login_required(login_url='login')
 def DashboardMarcas(request):
@@ -684,19 +802,40 @@ def DashboardCards(request):
 def DashboardUsuario(request):
     if not request.user.is_staff:
         raise PermissionDenied
-    pagina = 1
-    if request.GET.get('pagina', 1):
-        pagina = int(request.GET.get('pagina', 1))
 
+    # Obtener filtros desde la solicitud
+    nombre = request.GET.get('nombre', '').strip()
+    rut = request.GET.get('rut', '').strip()
+    estado = request.GET.get('estado', '').strip()
+    pagina = int(request.GET.get('pagina', 1))
+
+    # Filtrar usuarios
+    usuarios = DatosUsuario.objects.all()
+    if nombre:
+        usuarios = usuarios.filter(nombre__icontains=nombre)
+    if rut:
+        usuarios = usuarios.filter(rut__icontains=rut)
+    if estado != '':
+        usuarios = usuarios.filter(activo=bool(int(estado)))
+
+    # Paginación
     usuario_por_pagina = 15
     inicio = (pagina - 1) * usuario_por_pagina
     fin = inicio + usuario_por_pagina
-    Usuario = DatosUsuario.objects.all()[inicio:fin]
+    usuarios_paginados = usuarios[inicio:fin]
 
-    cantidad_usuario = DatosUsuario.objects.count()
+    cantidad_usuario = usuarios.count()
     cantidad_paginas = (cantidad_usuario + usuario_por_pagina - 1) // usuario_por_pagina
 
-    return render(request, 'index-admin-usuarios.html', {'datos_usuario': Usuario, 'Pagina': pagina, 'CantidadPaginas': cantidad_paginas})
+    return render(request, 'index-admin-usuarios.html', {
+        'datos_usuario': usuarios_paginados,
+        'Pagina': pagina,
+        'CantidadPaginas': cantidad_paginas,
+        'nombre': nombre,
+        'rut': rut,
+        'estado': estado,
+    })
+    
 def buscar(request):
     query = request.GET.get('q')
 
@@ -823,3 +962,18 @@ def habilitar_usuario(request, user_id):
         usuario.activo = True
         usuario.save()
     return redirect('/dashboard/usuarios')
+
+@login_required(login_url='login')
+def AnularVenta(request, id):
+    if not request.user.is_staff:
+        raise PermissionDenied
+
+    try:
+        venta = Ventas.objects.get(id=id)
+        venta.anulada = True
+        venta.save()
+        messages.success(request, f"La venta #{id} ha sido anulada correctamente.")
+    except Ventas.DoesNotExist:
+        messages.error(request, "La venta no existe.")
+    
+    return redirect('/dashboard/ventas/')

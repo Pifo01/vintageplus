@@ -8,6 +8,28 @@
             <p class="fs-2 m-0">Sección de Usuarios</p>
         </div>
     </div>
+
+    <form method="GET" class="mt-3">
+        <div class="row">
+            <div class="col-md-3">
+                <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre" value="{{ request.GET.nombre }}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="rut" class="form-control" placeholder="Buscar por RUT" value="{{ request.GET.rut }}">
+            </div>
+            <div class="col-md-3">
+                <select name="estado" class="form-control">
+                    <option value="">Todos los estados</option>
+                    <option value="1" {% if request.GET.estado == "1" %}selected{% endif %}>Activo</option>
+                    <option value="0" {% if request.GET.estado == "0" %}selected{% endif %}>Inactivo</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a href="/dashboard/usuarios" class="btn btn-secondary">Limpiar</a>
+            </div>
+        </div>
+    </form>
 </div>
 
 <!-- Tabla -->

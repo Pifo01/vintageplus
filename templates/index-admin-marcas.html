@@ -22,9 +22,9 @@
             </div>
         </div>
     </div>
-    {%endif%}
+    {% endif %}
     
-    {%if Marca%}
+    {% if Marca %}
         <table class="table table-striped table-hover align-middle rounded-bottom">
             <thead>
                 <tr>
@@ -32,32 +32,41 @@
                     <th>Nombre</th>
                     <th>Empresa</th>
                     <th>Linea</th>
+                    <th>Estado</th>  <!-- Nueva columna para el estado -->
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {%for zm in Marca%}
+                {% for zm in Marca %}
                 <tr>
-                    <td>{{zm.id}}</td>
-                    <td>{{zm.nombre}}</td>
-                    <td>{{zm.empresa}}</td>
-                    <td>{{zm.linea|capfirst}}</td>
+                    <td>{{ zm.id }}</td>
+                    <td>{{ zm.nombre }}</td>
+                    <td>{{ zm.empresa }}</td>
+                    <td>{{ zm.linea|capfirst }}</td>
                     <td class="text-center">
-                        <a href="/dashboard/marcas/ver/{{zm.id}}" class='btn btn-success btn-sm p-2 ps-3 pe-3'>
+                        {% if zm.activo %}
+                            <span class="badge bg-success">Activo</span>
+                        {% else %}
+                            <span class="badge bg-danger">Anulada</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <a href="/dashboard/marcas/ver/{{ zm.id }}" class="btn btn-success btn-sm p-2 ps-3 pe-3">
                             <i class="bi bi-eye"></i>
                         </a>
-                        <a href="/dashboard/marcas/actualizar/{{zm.id}}" class='btn btn-warning btn-sm p-2 ps-3 pe-3'>
+                        <a href="/dashboard/marcas/actualizar/{{ zm.id }}" class="btn btn-warning btn-sm p-2 ps-3 pe-3">
                             <i class="bi bi-pencil"></i>
                         </a>
-                        <a href="/dashboard/marcas/borrar/{{zm.id}}" class='btn btn-danger btn-sm p-2 ps-3 pe-3'>
-                            <i class="bi bi-trash"></i>
+                        <a href="/dashboard/marcas/toggle/{{ zm.id }}" class="btn {% if zm.activo %}btn-danger{% else %}btn-success{% endif %} btn-sm p-2 ps-3 pe-3">
+                            <i class="bi {% if zm.activo %}bi-x-circle{% else %}bi-check-circle{% endif %}"></i>
+                            {% if zm.activo %} Anular {% else %} Habilitar {% endif %}
                         </a>
                     </td>
                 </tr>
-                {%endfor%}
+                {% endfor %}
             </tbody>
         </table>
-    {%else%}
+    {% else %}
         <p class="text-center text-muted mt-3">No hay marcas disponibles.</p>
-    {%endif%}
+    {% endif %}
 {% endblock %}
