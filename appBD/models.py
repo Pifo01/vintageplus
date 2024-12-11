@@ -28,10 +28,10 @@ class Articulos(models.Model):
 
 
 class CategoriaCard(models.Model):
-    titulo = models.CharField(max_length=100, unique=True)
+    titulo = models.CharField(max_length=20, unique=True)
     imagen = models.ImageField(upload_to='imagenes/')  
-    marca = models.ForeignKey(ArticuloMarca, on_delete=models.CASCADE, default=1, null=False)
-    activo = models.BooleanField(default=True)
+    marca = models.ForeignKey('ArticuloMarca', on_delete=models.CASCADE, default=1, null=False)
+    activo = models.BooleanField(default=True)  # Indica si la categoría está habilitada
 
 class SoporteTicket(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
@@ -54,7 +54,7 @@ class DatosUsuario(models.Model):
     correo = models.EmailField(null=False)
     direccion = models.CharField(max_length=30, null=False)
     telefono = models.CharField(max_length=12, null=False)
-    codigo_postal = models.CharField(max_length=10, null=False)
+    codigo_postal = models.IntegerField(max_length=10, null=False)
     activo = models.BooleanField(default=True)
 
     def __str__(self):

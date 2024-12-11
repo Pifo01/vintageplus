@@ -1,7 +1,6 @@
 {% extends "header-admin.html" %}
 
 {% block content %}
-  
 
 <div class="container mt-5">
     {% if user.is_authenticated and user.is_superuser %}
@@ -10,7 +9,18 @@
     <div class="container text-bg-light text-center p-3 rounded-top border-bottom">
         <div class="row">
             <div class="col">
-                
+                <form method="get" class="mb-4">
+                    <div class="row g-3 align-items-end">
+                        <label for="Nombre" class="form-label">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Nombre de la marca" value="{{ nombre }}">
+                      </div>
+                      <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                      </div>
+                      <div>
+                        <a href="/dashboard/marcas/" class="btn btn-secondary">Limpiar filtros</a>
+                      </div>
+                    </div>
             </div>
             <div class="col">
                 <p class="fs-2 m-0">Sección de Marcas</p>

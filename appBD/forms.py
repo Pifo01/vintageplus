@@ -157,9 +157,11 @@ class ArticuloMarcaForm(forms.ModelForm):
 
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
-        if ArticuloMarca.objects.filter(nombre=nombre).exists():
+        # Excluir el registro actual al verificar duplicados
+        if ArticuloMarca.objects.filter(nombre=nombre).exclude(id=self.instance.id).exists():
             raise ValidationError(f"El artículo con nombre '{nombre}' ya existe.")
         return nombre
+
 
 
 

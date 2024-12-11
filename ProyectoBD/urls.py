@@ -82,6 +82,9 @@ urlpatterns = [
     path('dashboard/categoria/ver/<int:id>',views.View_cards),
     path('dashboard/categoria/actualizar/<int:id>',views.Update_cards),
     path('dashboard/categoria/borrar/<int:id>',views.Delete_cards),
+    path('dashboard/categoria/', views.DashboardCards, name='dashboard_categorias'),
+    path('dashboard/categoria/toggle/<int:id>/', views.toggle_categoria, name='toggle_categoria'),
+    
 
     path('dashboard/usuarios/',views.DashboardUsuario),
     path('dashboard/usuarios/ver/<int:id>',views.View_Usuario),

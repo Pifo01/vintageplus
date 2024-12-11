@@ -29,6 +29,11 @@ from django.utils.dateparse import parse_date
 from collections import Counter
 from django.db.models import Prefetch, Q
 from datetime import timedelta, datetime
+from django.shortcuts import get_object_or_404, redirect, render
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from .models import CategoriaCard
 
 def register(request):
     if request.method == 'POST':
@@ -182,19 +187,24 @@ def Update_cards(request,id):
     return render(request,'create-Articulos.html',data)
 
 
-def Update_ArticuloMarca(request,id):
-    Marca=ArticuloMarca.objects.get(id=id)
-    form=ArticuloMarcaForm(instance=Marca)
-    if request.method=='POST':
-        form=ArticuloMarcaForm(request.POST,request.FILES, instance=Marca)
+def Update_ArticuloMarca(request, id):
+    # Obtener la instancia del modelo
+    Marca = ArticuloMarca.objects.get(id=id)
+    
+    # Inicializar el formulario con la instancia existente
+    if request.method == 'POST':
+        form = ArticuloMarcaForm(request.POST, request.FILES, instance=Marca)
         if form.is_valid():
-            Marca.nombre=form.cleaned_data['nombre']
-            Marca.empresa=form.cleaned_data['empresa']
-            Marca.linea=form.cleaned_data['linea']
-            Marca.save()
-        return redirect("/dashboard/marcas")
-    data={'form':form,'titulo':'Actualizar Marca de Articulos'}
-    return render(request,'create-Articulos.html',data)
+            # Guardar directamente usando el formulario
+            form.save()
+            return redirect("/dashboard/marcas")
+    else:
+        form = ArticuloMarcaForm(instance=Marca)
+    
+    # Preparar el contexto para la plantilla
+    data = {'form': form, 'titulo': 'Actualizar Marca de Artículos'}
+    return render(request, 'create-Articulos.html', data)
+
 
 def Update_Usuario(request, id):
     datos_usuario=DatosUsuario.objects.get(id=id)
@@ -777,6 +787,12 @@ def DashboardMarcas(request):
 
     cantidad_marcas = ArticuloMarca.objects.count()
     cantidad_paginas = (cantidad_marcas + marca_por_pagina - 1) // marca_por_pagina
+    
+    nombre = request.GET.get('nombre', '').strip()
+    marca = ArticuloMarca.objects.all()
+    if nombre:
+        marca = marca.filter(nombre__icontains=nombre)
+    
 
     return render(request, 'index-admin-marcas.html', {'Marca': marca, 'Pagina': pagina, 'CantidadPaginas': cantidad_paginas})
 
@@ -784,19 +800,46 @@ def DashboardMarcas(request):
 def DashboardCards(request):
     if not request.user.is_staff:
         raise PermissionDenied
-    pagina = 1
-    if request.GET.get('pagina', 1):
-        pagina = int(request.GET.get('pagina', 1))
-
+    
+    pagina = int(request.GET.get('pagina', 1))
     card_por_pagina = 15
+    titulo = request.GET.get('titulo', '').strip()
+    
+    CardQueryset = CategoriaCard.objects.all()
+    if titulo:
+        CardQueryset = CardQueryset.filter(titulo__icontains=titulo)
+    
+    cantidad_card = CardQueryset.count()
+    cantidad_paginas = (cantidad_card + card_por_pagina - 1) // card_por_pagina
+    
     inicio = (pagina - 1) * card_por_pagina
     fin = inicio + card_por_pagina
-    Card = CategoriaCard.objects.all()[inicio:fin]
+    Card = CardQueryset[inicio:fin]
+    
+    return render(
+        request, 
+        'index-admin-categorias.html', 
+        {
+            'cards': Card, 
+            'Pagina': pagina, 
+            'CantidadPaginas': cantidad_paginas,
+            'titulo': titulo
+        }
+    )
 
-    cantidad_card = CategoriaCard.objects.count()
-    cantidad_paginas = (cantidad_card + card_por_pagina - 1) // card_por_pagina
+@login_required(login_url='login')
+def toggle_categoria(request, id):
+    if not request.user.is_staff:
+        raise PermissionDenied
+    
+    categoria = get_object_or_404(CategoriaCard, id=id)
+    categoria.activo = not categoria.activo
+    categoria.save()
 
-    return render(request, 'index-admin-categorias.html', {'cards': Card, 'Pagina': pagina, 'CantidadPaginas': cantidad_paginas})
+    if request.is_ajax():  # Para solicitudes AJAX
+        return JsonResponse({'status': 'success', 'activo': categoria.activo})
+    return redirect(request.META.get('HTTP_REFERER', '/dashboard/categoria/'))
+
 
 @login_required(login_url='login')
 def DashboardUsuario(request):
